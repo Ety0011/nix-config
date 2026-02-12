@@ -21,6 +21,7 @@
     packages = with pkgs; [
       direnv
       nix-direnv
+      nixfmt-rfc-style # Nix formatter binary
       vscode
     ];
   };
