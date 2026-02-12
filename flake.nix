@@ -3,35 +3,40 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
-    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs }:
+
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
   let
-    configuration = { pkgs, ... }: {
-      # List packages installed in system profile
-      environment.systemPackages = [
-        pkgs.vim
-      ];
-
-      # Enable experimental features for flakes
-      nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-      # Set Git commit hash for darwin-version
-      system.configurationRevision = self.rev or self.dirtyRev or null;
-
-      # Used for backwards compatibility
-      # $ darwin-rebuild changelog
-      system.stateVersion = 6;
-
-      # The platform the configuration will be used on
-      nixpkgs.hostPlatform = "aarch64-darwin";
-    };
+    username = "ety";
+    hostname = "Etiennes-MacBook-Pro";
+    system = "aarch64-darwin";
   in
   {
-    darwinConfigurations."Etiennes-MacBook-Pro" = nix-darwin.lib.darwinSystem {
-      modules = [ configuration ];
+    darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
+      inherit system;
+      specialArgs = { inherit inputs username hostname self; };
+      modules = [
+        ./modules/darwin
+        home-manager.darwinModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.extraSpecialArgs = { inherit inputs username; };
+          home-manager.users.${username} = import ./modules/home-manager;
+        }
+      ];
     };
   };
 }
