@@ -39,6 +39,7 @@
         # Git autofetch
         "git.autofetch" = true;
         "git.autofetchPeriod" = 180;
+        "git.confirmSync" = false;
       };
     };
   };
