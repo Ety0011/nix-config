@@ -27,6 +27,7 @@
       ];
       userSettings = {
         "editor.formatOnSave" = true;
+        "editor.fontFamily" = "'JetBrains Mono', monospace";
 
         # Python
         "[python]" = {
