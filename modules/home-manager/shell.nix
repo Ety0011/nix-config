@@ -10,7 +10,8 @@
 
     shellAliases = {
       ll = "ls -la";
-      update = "darwin-rebuild switch --flake ~/nix-config";
+      update = "sudo darwin-rebuild switch --flake ~/nix-config";
+    };
     };
 
     initContent = ''
