@@ -15,6 +15,7 @@
   environment.systemPackages = with pkgs; [
     vim
     git
+    container
   ];
 
   # Set primary user for system defaults
