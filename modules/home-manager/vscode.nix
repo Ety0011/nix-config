@@ -10,7 +10,7 @@
 
         # Nix
         jnoortheen.nix-ide
-        
+
         # Python
         ms-python.python
         charliermarsh.ruff
@@ -26,8 +26,19 @@
         # ms-dotnettools.csharp
       ];
       userSettings = {
-        # "editor.fontSize" = 14;
         "editor.formatOnSave" = true;
+
+        # Python
+        "[python]" = {
+          "editor.defaultFormatter" = "charliermarsh.ruff";
+          "editor.codeActionsOnSave" = {
+            "source.organizeImports" = "explicit"; # Auto-sort imports
+          };
+        };
+
+        # Git autofetch
+        "git.autofetch" = true;
+        "git.autofetchPeriod" = 180;
       };
     };
   };
