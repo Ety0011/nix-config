@@ -19,8 +19,13 @@
         charliermarsh.ruff
         ms-toolsai.jupyter
 
-        # Java
-        # vscjava.vscode-java-pack
+        # Java extension pack
+        vscjava.vscode-java-pack
+        redhat.java
+        vscjava.vscode-java-debug
+        vscjava.vscode-java-test
+        vscjava.vscode-maven
+        vscjava.vscode-java-dependency
 
         # # C/C++
         # ms-vscode.cpptools
