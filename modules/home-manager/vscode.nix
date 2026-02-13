@@ -15,11 +15,10 @@
         ms-python.python
         ms-python.vscode-pylance
         ms-python.debugpy
-
         charliermarsh.ruff
         ms-toolsai.jupyter
 
-        # Java extension pack
+        # Java
         vscjava.vscode-java-pack
         redhat.java
         vscjava.vscode-java-debug
@@ -29,7 +28,8 @@
         vscjava.vscode-gradle
 
         # # C/C++
-        # ms-vscode.cpptools
+        ms-vscode.cpptools
+        ms-vscode.cmake-tools
 
         # # C#
         # ms-dotnettools.csharp
