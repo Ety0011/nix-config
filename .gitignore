@@ -3,4 +3,5 @@ result
 result-*
 
 # Ignore automatically generated direnv output
+# IDEA: This is not a nixos related file so you can move it to git.nix (see the TODO there)
 .direnv

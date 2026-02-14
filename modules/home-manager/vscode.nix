@@ -1,3 +1,4 @@
+# IDEA: I don't like the idea of configuring vs code declarative. There are too many options and some may conflict on other host and/or with each other. But you do you
 { pkgs, ... }:
 
 {
