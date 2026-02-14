@@ -15,7 +15,9 @@
   environment.systemPackages = with pkgs; [
     vim
     git
-    container
+    colima
+    docker
+    docker-compose
   ];
 
   # Set primary user for system defaults
