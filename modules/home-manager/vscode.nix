@@ -51,6 +51,10 @@
         "git.autofetch" = true;
         "git.autofetchPeriod" = 180;
         "git.confirmSync" = false;
+
+        # Disable confirmation popups
+        "explorer.confirmDelete" = false;
+        "explorer.confirmDragAndDrop" = false;
       };
     };
   };
