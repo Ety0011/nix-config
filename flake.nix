@@ -96,7 +96,14 @@
 
                 # Dynamically configure the user
                 # This says: "Configure the user named [vars.user] using the file at ./modules/home-manager"
-                home-manager.users.${vars.user} = import ./modules/home-manager;
+                home-manager.users.${vars.user} = {
+                  imports = [ ./modules/home-manager ];
+
+                  home = {
+                    username = vars.user;
+                    homeDirectory = "/Users/${vars.user}";
+                  };
+                };
               }
             )
           ];
