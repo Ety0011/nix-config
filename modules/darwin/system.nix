@@ -1,9 +1,6 @@
 { ... }:
 
 {
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   # System configuration
   system.defaults = {
     # Dock settings
