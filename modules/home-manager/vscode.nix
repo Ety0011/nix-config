@@ -27,11 +27,11 @@
         vscjava.vscode-java-dependency
         vscjava.vscode-gradle
 
-        # # C/C++
+        # C/C++
         ms-vscode.cpptools
         ms-vscode.cmake-tools
 
-        # # C#
+        # C#
         # ms-dotnettools.csharp
       ];
       userSettings = {

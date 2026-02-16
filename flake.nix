@@ -89,7 +89,7 @@
                 ];
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
-                home-manager.backupFileExtension = "backup"; # IDEA: I would change it to "hm-backup" or something similar to be more clear
+                home-manager.backupFileExtension = "hm-backup";
 
                 # We must pass 'vars' to Home Manager too, so it knows your username!
                 home-manager.extraSpecialArgs = { inherit inputs vars; };
