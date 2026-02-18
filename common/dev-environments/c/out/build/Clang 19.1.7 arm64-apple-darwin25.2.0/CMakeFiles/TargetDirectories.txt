@@ -1,3 +1,0 @@
-/Users/ety/nix-config/documentation/c/out/build/Clang 19.1.7 arm64-apple-darwin25.2.0/CMakeFiles/selection_sort.dir
-/Users/ety/nix-config/documentation/c/out/build/Clang 19.1.7 arm64-apple-darwin25.2.0/CMakeFiles/edit_cache.dir
-/Users/ety/nix-config/documentation/c/out/build/Clang 19.1.7 arm64-apple-darwin25.2.0/CMakeFiles/rebuild_cache.dir
