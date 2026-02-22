@@ -1,4 +1,3 @@
-# vars/default.nix
 { lib }:
 {
   username = "ety";

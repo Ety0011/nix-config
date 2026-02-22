@@ -1,5 +1,4 @@
 { ... }:
-
 {
   # Shell configuration
   programs.zsh = {

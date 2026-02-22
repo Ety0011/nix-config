@@ -1,8 +1,4 @@
-{
-  pkgs,
-  hostVars,
-  ...
-}:
+{ pkgs, hostVars, ... }:
 {
   environment.systemPackages = with pkgs; [
     colima

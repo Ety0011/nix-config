@@ -1,4 +1,3 @@
-# modules/base/home/home.nix
 { vars, ... }:
 {
   home.stateVersion = "25.05";

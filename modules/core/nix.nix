@@ -1,4 +1,4 @@
-{ self, ... }:
+{ ... }:
 {
   # Nix configuration
   nix = {

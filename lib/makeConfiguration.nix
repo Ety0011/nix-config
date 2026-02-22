@@ -5,11 +5,28 @@
   hostname,
 }:
 let
-  hostVars = import (lib.custom.relativeToRoot "hosts/${hostname}/vars.nix");
-  system = hostVars.system;
-  platform = if lib.hasSuffix "darwin" system then "darwin" else "nixos";
+  host = lib.custom.makeHost { inherit lib hostname; };
+  hostVars = host.vars;
+  hostOs = host.os;
+  hostSystemModules = host.systemModules;
+  hostHomeModules = host.homeModules;
 
-  forPlatform = attrs: attrs.${platform};
+  system = hostVars.system;
+
+  osArgs =
+    {
+      darwin = {
+        builder = inputs.nix-darwin.lib.darwinSystem;
+        homeManagerModule = inputs.home-manager.darwinModules.home-manager;
+        configuration = "darwinConfigurations";
+      };
+      nixos = {
+        builder = inputs.nixpkgs.lib.nixosSystem;
+        homeManagerModule = inputs.home-manager.nixosModules.home-manager;
+        configuration = "nixosConfigurations";
+      };
+    }
+    .${hostOs};
 
   extraSpecialArgs = {
     inherit
@@ -29,16 +46,8 @@ let
     nixpkgs.config.allowUnfree = true;
   };
 
-  systemModules = [ (lib.custom.relativeToRoot "modules/${platform}") ];
-  homeModules = [ (lib.custom.relativeToRoot "home/${platform}") ];
-
-  hostSystemModules = [ (lib.custom.relativeToRoot "hosts/${hostname}/system.nix") ];
-  hostHomeModules = [ (lib.custom.relativeToRoot "hosts/${hostname}/home.nix") ];
-
-  homeManagerModule = forPlatform {
-    darwin = inputs.home-manager.darwinModules.home-manager;
-    nixos = inputs.home-manager.nixosModules.home-manager;
-  };
+  systemModules = [ (lib.custom.relativeToRoot "modules/${hostOs}") ];
+  homeModules = [ (lib.custom.relativeToRoot "home/${hostOs}") ];
 
   homeManagerConfig = {
     home-manager.useGlobalPkgs = true;
@@ -48,26 +57,14 @@ let
     home-manager.users.${vars.username}.imports = homeModules ++ hostHomeModules;
   };
 
-  builder = forPlatform {
-    darwin = inputs.nix-darwin.lib.darwinSystem;
-    nixos = inputs.nixpkgs.lib.nixosSystem;
-  };
-
-  platformConfiguration = forPlatform {
-    darwin = "darwinConfigurations";
-    nixos = "nixosConfigurations";
-  };
-
   modules = [
     nixpkgsModule
   ]
+  ++ [ osArgs.homeManagerModule ]
+  ++ [ homeManagerConfig ]
   ++ systemModules
-  ++ hostSystemModules
-  ++ [
-    homeManagerModule
-    homeManagerConfig
-  ];
+  ++ hostSystemModules;
 in
 {
-  ${platformConfiguration}.${hostname} = builder { inherit system specialArgs modules; };
+  ${osArgs.configuration}.${hostname} = osArgs.builder { inherit system specialArgs modules; };
 }

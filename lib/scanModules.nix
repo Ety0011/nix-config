@@ -1,8 +1,4 @@
-# scanModules.nix
 { lib }:
-
-# Function: scan a directory for subdirs and .nix files
-# Returns a list of paths
 path:
 builtins.map (f: lib.path.append path f) (
   builtins.attrNames (
