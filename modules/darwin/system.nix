@@ -1,36 +1,24 @@
-{ ... }:
-
+{ hostVars, ... }:
 {
-  # System configuration
-  system.defaults = {
-    # Dock settings
-    dock = {
-      autohide = true;
-      show-recents = false;
-      orientation = "bottom";
+  system = {
+    defaults = {
+      dock = {
+        autohide = true;
+        show-recents = false;
+        orientation = "bottom";
+      };
+      finder = {
+        AppleShowAllExtensions = true;
+        FXPreferredViewStyle = "clmv";
+        ShowPathbar = true;
+      };
+      NSGlobalDomain = {
+        AppleShowAllExtensions = true;
+        InitialKeyRepeat = 15;
+        KeyRepeat = 2;
+      };
     };
 
-    # Finder settings
-    finder = {
-      AppleShowAllExtensions = true;
-      FXPreferredViewStyle = "clmv";
-      ShowPathbar = true;
-    };
-
-    # NSGlobalDomain settings
-    NSGlobalDomain = {
-      AppleShowAllExtensions = true;
-      InitialKeyRepeat = 15;
-      KeyRepeat = 2;
-    };
+    stateVersion = hostVars.stateVersion;
   };
-
-  # Keyboard settings
-  # keyboard = {
-  #   enableKeyMapping = true;
-  #   remapCapsLockToEscape = true;
-  # };
-
-  # Platform
-  nixpkgs.hostPlatform = "aarch64-darwin";
 }
