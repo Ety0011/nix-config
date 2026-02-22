@@ -5,12 +5,8 @@
   hostname,
 }:
 let
-  host = lib.custom.makeHost { inherit lib hostname; };
-  hostVars = host.vars;
-  hostOs = host.os;
-  hostSystemModules = host.systemModules;
-  hostHomeModules = host.homeModules;
-
+  hostVars = import (lib.custom.relativeToRoot "hosts/${hostname}/vars.nix");
+  hostOs = if lib.hasSuffix "darwin" hostVars.system then "darwin" else "nixos";
   system = hostVars.system;
 
   osArgs =
@@ -48,6 +44,8 @@ let
 
   systemModules = [ (lib.custom.relativeToRoot "modules/${hostOs}") ];
   homeModules = [ (lib.custom.relativeToRoot "home/${hostOs}") ];
+  hostSystemModules = [ (lib.custom.relativeToRoot "hosts/${hostname}/system.nix") ];
+  hostHomeModules = [ (lib.custom.relativeToRoot "hosts/${hostname}/home.nix") ];
 
   homeManagerConfig = {
     home-manager.useGlobalPkgs = true;
