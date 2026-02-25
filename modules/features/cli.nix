@@ -10,6 +10,7 @@
   flake.modules.darwin.cli = {
     imports = with inputs.self.modules.darwin; [
       nix-settings
+      # TODO: why not ssh here
     ];
   };
 
@@ -23,6 +24,10 @@
         direnv
         starship
       ];
-      home.packages = with pkgs; [ vim ];
+      home.packages = with pkgs; [
+        vim
+        nixd
+        nixfmt
+      ]; # TODO: this should be its own feature
     };
 }

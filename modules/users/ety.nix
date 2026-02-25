@@ -28,7 +28,11 @@ in
   };
 
   flake.modules.homeManager.${userName} =
-    { pkgs, lib, ... }:
+    {
+      pkgs,
+      lib,
+      ...
+    }:
     {
       home.username = lib.mkDefault userName;
       home.homeDirectory = lib.mkDefault (
@@ -40,6 +44,7 @@ in
       home.packages = with pkgs; [ nixfmt ];
       imports = with inputs.self.modules.homeManager; [
         cli
+        vscode
       ];
     };
 }

@@ -6,6 +6,7 @@ in
   flake.darwinConfigurations.${hostName} = inputs.nix-darwin.lib.darwinSystem {
     modules = with inputs.self.modules.darwin; [
       { nixpkgs.hostPlatform = "aarch64-darwin"; }
+      { nixpkgs.config.allowUnfree = true; }
       {
         networking.hostName = hostName;
         networking.computerName = hostName;
