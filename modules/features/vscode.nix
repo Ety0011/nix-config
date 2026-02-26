@@ -23,6 +23,8 @@
             vscjava.vscode-maven
             vscjava.vscode-java-dependency
             vscjava.vscode-gradle
+            llvm-vs-code-extensions.vscode-clangd
+            ms-vscode.cmake-tools
           ];
 
           userSettings = {

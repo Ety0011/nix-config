@@ -3,3 +3,7 @@ result
 result-*
 
 flake.lock
+
+build
+out
+.cache
