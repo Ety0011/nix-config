@@ -46,6 +46,8 @@
             "git.autofetchPeriod" = 180;
             "git.confirmSync" = false;
 
+            "chat.disabled" = true;
+
             "markdown-preview-enhanced.scrollSync" = false;
             "markdown-preview-enhanced.previewTheme" = "auto.css";
 
