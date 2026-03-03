@@ -41,7 +41,10 @@ in
       home.stateVersion = "24.11";
       programs.home-manager.enable = true;
 
-      home.packages = with pkgs; [ nixfmt ];
+      home.packages = with pkgs; [
+        nixfmt
+        lldb
+      ];
       imports = with inputs.self.modules.homeManager; [
         cli
         vscode

@@ -25,6 +25,8 @@
             vscjava.vscode-gradle
             llvm-vs-code-extensions.vscode-clangd
             ms-vscode.cmake-tools
+            tomoki1207.pdf
+            shd101wyy.markdown-preview-enhanced
           ];
 
           userSettings = {
@@ -43,6 +45,9 @@
             "git.autofetch" = true;
             "git.autofetchPeriod" = 180;
             "git.confirmSync" = false;
+
+            "markdown-preview-enhanced.scrollSync" = false;
+            "markdown-preview-enhanced.previewTheme" = "auto.css";
 
             "nix.enableLanguageServer" = true;
             "nix.serverPath" = "/etc/profiles/per-user/ety/bin/nixd";

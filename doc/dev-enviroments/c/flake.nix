@@ -29,17 +29,12 @@
                 stdenv = pkgs.clangStdenv;
               }
               {
-                packages =
-                  with pkgs;
-                  [
-                    clang-tools
-                    cmake
-                    conan
-                    lldb
-                  ]
-                  ++ pkgs.lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-                    gdb
-                  ];
+                packages = with pkgs; [
+                  clang-tools
+                  cmake
+                  conan
+                  lldb
+                ];
               };
         }
       );
