@@ -55,7 +55,6 @@
           default = pkgs.mkShell {
             packages = with python.pkgs; [
               python
-              ruff
 
               numpy
               pandas
