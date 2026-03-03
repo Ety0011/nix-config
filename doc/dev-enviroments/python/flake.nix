@@ -56,6 +56,17 @@
             packages = with python.pkgs; [
               python
               ruff
+
+              numpy
+              pandas
+              matplotlib
+              seaborn
+              plotly
+              scikit-learn
+
+              pip
+              notebook
+              jupyter
             ];
           };
         }
