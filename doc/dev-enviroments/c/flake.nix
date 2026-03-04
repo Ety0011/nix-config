@@ -32,8 +32,6 @@
                 packages = with pkgs; [
                   clang-tools
                   cmake
-                  conan
-                  lldb
                 ];
               };
         }
