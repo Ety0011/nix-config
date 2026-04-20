@@ -29,6 +29,9 @@
             else
               "sudo nixos-rebuild switch --flake ~/nix-config";
         };
+        initContent = ''
+          export PATH=/opt/homebrew/bin:$PATH
+        '';
       };
     };
 }
