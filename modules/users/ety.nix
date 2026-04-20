@@ -25,6 +25,15 @@ in
     home-manager.users.${userName}.imports = [
       inputs.self.modules.homeManager.${userName}
     ];
+
+    homebrew = {
+      enable = true;
+      onActivation.cleanup = "zap"; # Optional: removes apps not in this list
+      casks = [
+        "unity-hub"
+        "microsoft-teams"
+      ];
+    };
   };
 
   flake.modules.homeManager.${userName} =
