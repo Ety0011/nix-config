@@ -21,7 +21,6 @@
         zsh
         git
         ssh
-        direnv
         starship
       ];
       home.packages = with pkgs; [

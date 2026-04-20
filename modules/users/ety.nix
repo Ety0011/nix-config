@@ -29,6 +29,9 @@ in
     homebrew = {
       enable = true;
       onActivation.cleanup = "zap"; # Optional: removes apps not in this list
+      brews = [
+        "direnv"
+      ];
       casks = [
         "unity-hub"
         "microsoft-teams"
@@ -56,7 +59,6 @@ in
       ];
       imports = with inputs.self.modules.homeManager; [
         cli
-        vscode
       ];
     };
 }
