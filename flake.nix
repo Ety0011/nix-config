@@ -2,28 +2,42 @@
   description = "Ety NixOS and macOS configurations";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
+    # NixOS channel — used for nixosConfigurations
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+
+    # Darwin channel — has macOS-specific patches; used for darwinConfigurations
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
+
+    # Unstable channel — available as pkgs.unstable overlay in all systems
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin"; # must follow the darwin channel
     };
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
+
     import-tree.url = "github:vic/import-tree";
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";

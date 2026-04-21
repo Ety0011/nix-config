@@ -1,13 +1,11 @@
 { ... }:
-let
-  userName = "Etienne";
-  userEmail = "etienne.orio@orio.ch";
-in
 {
+  # Generic git feature module — no hardcoded identity.
+  # Each user module sets programs.git.settings.user.name / .email separately.
   flake.modules.homeManager.git = {
     programs.delta = {
       enable = true;
-      enableGitIntegration = true; # now must be explicit
+      enableGitIntegration = true;
     };
 
     programs.git = {
@@ -21,11 +19,6 @@ in
       ];
 
       settings = {
-        # replaces extraConfig
-        user = {
-          name = userName; # replaces userName
-          email = userEmail; # replaces userEmail
-        };
         init.defaultBranch = "main";
         pull.rebase = false;
         push.autoSetupRemote = true;

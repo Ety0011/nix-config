@@ -1,5 +1,6 @@
 { ... }:
 {
+  # System-level: register zsh as a valid login shell.
   flake.modules.nixos.zsh = {
     programs.zsh.enable = true;
   };
@@ -8,6 +9,7 @@
     programs.zsh.enable = true;
   };
 
+  # homeManager: full zsh user configuration.
   flake.modules.homeManager.zsh =
     { pkgs, ... }:
     {
@@ -23,15 +25,13 @@
           share = true;
         };
         shellAliases = {
+          # Picks the right rebuild command depending on the platform.
           update =
             if pkgs.stdenv.isDarwin then
               "sudo darwin-rebuild switch --flake ~/nix-config"
             else
               "sudo nixos-rebuild switch --flake ~/nix-config";
         };
-        initContent = ''
-          export PATH=/opt/homebrew/bin:$PATH
-        '';
       };
     };
 }

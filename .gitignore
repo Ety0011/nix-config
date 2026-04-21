@@ -1,9 +1,44 @@
-# Ignore build outputs from performing a nix-build or `nix build` command
+# Nix
 result
 result-*
 
-flake.lock
+# direnv
+.direnv/
+.envrc.cache
 
-build
-out
-.cache
+# macOS
+.DS_Store
+**/.DS_Store
+
+# C / CMake build artifacts
+build/
+out/
+*.o
+*.d
+*.a
+*.so
+*.dylib
+a.out
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CMakePresets.json.bak
+.cmake/
+
+# clangd index
+.cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Editor
+*.swp
+*.swo
+.vscode/settings.json

@@ -4,7 +4,7 @@
     programs.starship = {
       enable = true;
       enableZshIntegration = true;
-      enableTransience = true; # collapses old prompts — clean terminal
+      enableTransience = true; # collapse old prompts for a clean terminal
       settings = {
         add_newline = true;
         character = {

@@ -3,7 +3,8 @@
   flake.modules.nixos.syncthing = {
     services.syncthing = {
       enable = true;
-      # peers added via collector pattern per host
+      openDefaultPorts = true;
+      # peers and folders are configured per-host via the host module
     };
   };
 

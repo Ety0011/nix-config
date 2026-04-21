@@ -1,19 +1,17 @@
 { ... }:
 {
   flake.modules.darwin.system-defaults = {
-    system.stateVersion = 6;
-
     system.defaults = {
       dock = {
         autohide = true;
         show-recents = false;
         orientation = "bottom";
-        minimize-to-application = true; # cleaner dock
+        minimize-to-application = true;
       };
 
       finder = {
         AppleShowAllExtensions = true;
-        AppleShowAllFiles = true; # show hidden files
+        AppleShowAllFiles = true;
         FXPreferredViewStyle = "clmv"; # column view
         ShowPathbar = true;
         ShowStatusBar = true;
@@ -29,7 +27,7 @@
         AppleShowAllExtensions = true;
         InitialKeyRepeat = 15;
         KeyRepeat = 2;
-        ApplePressAndHoldEnabled = false; # allows key repeat instead of accent menu
+        ApplePressAndHoldEnabled = false; # key repeat instead of accent menu
         NSAutomaticSpellingCorrectionEnabled = false;
         NSAutomaticCapitalizationEnabled = false;
         NSAutomaticDashSubstitutionEnabled = false;
