@@ -2,6 +2,7 @@
 {
   # Layer 3 — CLI system extended for interactive desktop use.
 
+  # TODO: not convinced about wiring pipeline
   flake.modules.darwin.system-desktop = {
     imports = with inputs.self.modules.darwin; [
       system-cli
@@ -16,6 +17,7 @@
   flake.modules.homeManager.system-desktop = {
     imports = with inputs.self.modules.homeManager; [
       system-cli
+      # vscode
     ];
   };
 }

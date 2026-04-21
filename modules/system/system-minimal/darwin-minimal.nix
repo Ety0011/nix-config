@@ -13,6 +13,13 @@
           unstable = import inputs.nixpkgs-unstable {
             inherit (final) config system;
           };
+          # TODO: move this in appropriate place
+          direnv = _prev.direnv.overrideAttrs (_: {
+            doCheck = false;
+            checkPhase = "true";
+            doInstallCheck = false;
+            installCheckPhase = "true";
+          });
         })
       ];
 

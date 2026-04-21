@@ -1,8 +1,7 @@
 { inputs, ... }:
 {
-  # Wire the ety user into this host.
-  # The actual user definition lives in modules/users/ety/ety.nix.
-  flake.modules.darwin.mac-machine = {
+  # TODO: why is this called ety when its clearly just users in this host?
+  flake.modules.darwin."Etiennes-MacBook-Pro" = {
     imports = with inputs.self.modules.darwin; [
       ety
     ];

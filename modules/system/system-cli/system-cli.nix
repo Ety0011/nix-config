@@ -23,6 +23,7 @@
     ];
   };
 
+  # TODO: I dont know if system-cli is correct name, we are just composing features
   flake.modules.homeManager.system-cli = {
     imports = with inputs.self.modules.homeManager; [
       system-minimal

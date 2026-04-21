@@ -1,10 +1,8 @@
 { inputs, ... }:
 {
-  # Defines the mac-machine darwin module.
-  # Users are wired in users/ety.nix; hardware in hardware.nix.
-  flake.modules.darwin.mac-machine = {
+  flake.modules.darwin."Etiennes-MacBook-Pro" = {
     imports = with inputs.self.modules.darwin; [
-      system-desktop # layer 3: system-minimal → system-cli → system-desktop
+      system-desktop
     ];
 
     networking.hostName = "Etiennes-MacBook-Pro";

@@ -1,4 +1,4 @@
 { inputs, ... }:
 {
-  flake.darwinConfigurations = inputs.self.lib.mkDarwin "aarch64-darwin" "mac-machine";
+  flake.darwinConfigurations = inputs.self.lib.mkDarwin "aarch64-darwin" "Etiennes-MacBook-Pro";
 }
