@@ -15,16 +15,28 @@ in
       nixos.${username} = { };
 
       # ── Darwin extras ────────────────────────────────────────────────────────
-      darwin.${username} = { };
+      # TODO: not sure if this is the right place for homebrew but makes sense
+      darwin.${username} = {
+        homebrew = {
+          enable = true;
+          onActivation.cleanup = "zap";
+          casks = [
+            "obs"
+            "unity-hub"
+            "microsoft-teams"
+          ];
+        };
+      };
 
       # ── homeManager config ───────────────────────────────────────────────────
       homeManager.${username} =
         { pkgs, ... }:
         {
           imports = with self.modules.homeManager; [
-            system-desktop # transitively pulls in: system-cli → system-minimal
-                           # which includes: zsh, git, direnv, starship, nix-tools,
-                           #                 ssh, sops, vscode, system defaults
+            system-desktop
+            # transitively pulls in: system-cli → system-minimal
+            # which includes: zsh, git, direnv, starship, nix-tools,
+            #                 ssh, sops, vscode, system defaults
           ];
 
           # Git identity belongs in the user module, not the generic git feature.
