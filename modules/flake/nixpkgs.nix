@@ -5,7 +5,6 @@
   perSystem =
     { system, ... }:
     {
-      # TODO: why is this also done in each minimal system?
       _module.args.pkgs = import inputs.nixpkgs {
         inherit system;
         config.allowUnfree = true;

@@ -1,7 +1,7 @@
-{ inputs, ... }:
+{ ... }:
 {
   # Declarative disk layout via disko.
-  # disko-wiring (imported via system-cli) provides the disko NixOS module.
+  # disko is imported via host-base → disko-wiring.
   # Define your partition scheme here, for example:
   #
   #   flake.modules.nixos.nixos-machine = {

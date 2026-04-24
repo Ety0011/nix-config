@@ -82,10 +82,8 @@
               "options" = {
                 # Provides completion / hover for home-manager and nix-darwin options.
                 # The expression is evaluated lazily so it only runs when VSCode requests it.
-                "home-manager"."expr" =
-                  "(builtins.getFlake \"\${workspaceFolder}\").darwinConfigurations.\"Etiennes-MacBook-Pro\".options.home-manager";
-                "nix-darwin"."expr" =
-                  "(builtins.getFlake \"\${workspaceFolder}\").darwinConfigurations.\"Etiennes-MacBook-Pro\".options";
+                "home-manager"."expr" = "(builtins.getFlake \"\${workspaceFolder}\").darwinConfigurations.\"Etiennes-MacBook-Pro\".options.home-manager";
+                "nix-darwin"."expr" = "(builtins.getFlake \"\${workspaceFolder}\").darwinConfigurations.\"Etiennes-MacBook-Pro\".options";
               };
             };
 

@@ -3,43 +3,33 @@ let
   username = "ety";
 in
 {
-  # Use the factory to generate the standard account boilerplate for all three
-  # contexts (nixos / darwin / homeManager), then merge in ety-specific extras.
   flake.modules = lib.mkMerge [
     (self.factory.user username true)
 
     {
-      # ── NixOS extras ────────────────────────────────────────────────────────
-      # The factory already creates users.users.ety and wires home-manager.
-      # Add any NixOS-specific extras here.
+      # NixOS account extras (factory already creates the account and wires home-manager)
       nixos.${username} = { };
 
-      # ── Darwin extras ────────────────────────────────────────────────────────
-      # TODO: not sure if this is the right place for homebrew but makes sense
-      darwin.${username} = {
-        homebrew = {
-          enable = true;
-          onActivation.cleanup = "zap";
-          casks = [
-            "obs"
-            "unity-hub"
-            "microsoft-teams"
-          ];
-        };
-      };
+      # Darwin account extras
+      darwin.${username} = { };
 
-      # ── homeManager config ───────────────────────────────────────────────────
+      # homeManager: ety chooses exactly the features they want.
+      # This is personal preference — nothing here belongs in host config.
       homeManager.${username} =
         { pkgs, ... }:
         {
           imports = with self.modules.homeManager; [
-            system-desktop
-            # transitively pulls in: system-cli → system-minimal
-            # which includes: zsh, git, direnv, starship, nix-tools,
-            #                 ssh, sops, vscode, system defaults
+            sops
+            ssh
+            zsh
+            git
+            direnv
+            starship
+            nix-tools
+            vscode
           ];
 
-          # Git identity belongs in the user module, not the generic git feature.
+          # Git identity belongs to the user, not to the generic git feature.
           programs.git.settings.user = {
             name = "Etienne";
             email = "etienne.orio@orio.ch";
