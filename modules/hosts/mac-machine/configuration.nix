@@ -1,12 +1,11 @@
 { inputs, ... }:
+let
+  hostName = "Etiennes-MacBook-Pro";
+  system = "aarch64-darwin";
+in
 {
-  flake.modules.darwin."Etiennes-MacBook-Pro" = {
-    imports = with inputs.self.modules.darwin; [
-      host-desktop  # host-base (nix settings, GC, home-manager, sops)
-                    # + system-defaults + window-manager
-    ];
+  flake.darwinConfigurations = inputs.self.lib.mkDarwin system hostName;
 
-    networking.hostName = "Etiennes-MacBook-Pro";
-    networking.computerName = "Etiennes-MacBook-Pro";
-  };
+  # Hardware-specific overrides — add kernel modules or hardware quirks here if needed.
+  flake.modules.darwin.${hostName} = { };
 }

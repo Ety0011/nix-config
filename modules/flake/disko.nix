@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  flake.modules.nixos.disko-wiring = {
+  flake.modules.nixos.diskoWiring = {
     imports = [ inputs.disko.nixosModules.disko ];
   };
 }

@@ -1,10 +1,12 @@
 { inputs, ... }:
+let
+  hostName = "nixos-machine";
+  system = "x86_64-linux";
+in
 {
-  flake.modules.nixos.nixos-machine = {
-    imports = with inputs.self.modules.nixos; [
-      host-base  # nix settings, GC, home-manager, disko, sops, ssh server
-    ];
+  flake.nixosConfigurations = inputs.self.lib.mkNixos system hostName;
 
-    networking.hostName = "nixos-machine";
-  };
+  # Hardware-specific overrides — add kernel modules, CPU microcode, or
+  # hardware-configuration.nix import here.
+  flake.modules.nixos.${hostName} = { };
 }

@@ -4,17 +4,24 @@ let
 in
 {
   flake.modules = lib.mkMerge [
-    (self.factory.user username true)
+    (self.lib.mkUser username true)
 
     {
-      # NixOS account extras (factory already creates the account and wires home-manager)
       nixos.${username} = { };
 
-      # Darwin account extras
-      darwin.${username} = { };
+      # Homebrew casks are darwin system-level but represent ety's personal apps.
+      darwin.${username} = {
+        homebrew = {
+          enable = true;
+          onActivation.cleanup = "zap";
+          casks = [
+            "obs"
+            "unity-hub"
+            "microsoft-teams"
+          ];
+        };
+      };
 
-      # homeManager: ety chooses exactly the features they want.
-      # This is personal preference — nothing here belongs in host config.
       homeManager.${username} =
         { pkgs, ... }:
         {
@@ -25,11 +32,9 @@ in
             git
             direnv
             starship
-            nix-tools
-            vscode
+            nixTools
           ];
 
-          # Git identity belongs to the user, not to the generic git feature.
           programs.git.settings.user = {
             name = "Etienne";
             email = "etienne.orio@orio.ch";
@@ -37,6 +42,7 @@ in
 
           home.packages = with pkgs; [
             lldb
+            rectangle
           ];
         };
     }

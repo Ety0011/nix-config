@@ -1,39 +1,83 @@
 {
   inputs,
   lib,
+  self,
   ...
 }:
 {
-  # Expose helper functions via flake.lib so host flake-parts files stay
-  # as one-liners and never repeat the darwinSystem / nixosSystem boilerplate.
-
   options.flake.lib = lib.mkOption {
     type = lib.types.attrsOf lib.types.unspecified;
     default = { };
-    description = "Shared helper functions for building host configurations.";
+    description = "Shared helper functions for building host and user configurations.";
   };
 
   config.flake.lib = {
 
-    # Build a nixosConfiguration from the matching flake.modules.nixos.<name> module.
-    # Usage:  flake.nixosConfigurations = inputs.self.lib.mkNixos "x86_64-linux" "my-host";
-    mkNixos = system: name: {
-      ${name} = inputs.nixpkgs.lib.nixosSystem {
+    mkNixos = system: hostName: {
+      ${hostName} = inputs.nixpkgs.lib.nixosSystem {
         modules = [
-          inputs.self.modules.nixos.${name}
-          { nixpkgs.hostPlatform = lib.mkDefault system; }
+          inputs.self.common.base
+          inputs.self.modules.nixos.base
+          inputs.self.modules.nixos.${hostName}
+          {
+            nixpkgs.hostPlatform = system;
+            networking.hostName = hostName;
+          }
         ];
       };
     };
 
-    # Build a darwinConfiguration from the matching flake.modules.darwin.<name> module.
-    # Usage:  flake.darwinConfigurations = inputs.self.lib.mkDarwin "aarch64-darwin" "my-host";
-    mkDarwin = system: name: {
-      ${name} = inputs.nix-darwin.lib.darwinSystem {
+    mkDarwin = system: hostName: {
+      ${hostName} = inputs.nix-darwin.lib.darwinSystem {
         modules = [
-          inputs.self.modules.darwin.${name}
-          { nixpkgs.hostPlatform = lib.mkDefault system; }
+          inputs.self.common.base
+          inputs.self.modules.darwin.base
+          inputs.self.modules.darwin.${hostName}
+          {
+            nixpkgs.hostPlatform = system;
+            networking.hostName = hostName;
+            networking.computerName = hostName;
+          }
         ];
+      };
+    };
+
+    mkUser = username: isAdmin: {
+      nixos.${username} =
+        { lib, pkgs, ... }:
+        {
+          users.users.${username} = {
+            isNormalUser = true;
+            home = "/home/${username}";
+            extraGroups =
+              [ "networkmanager" ]
+              ++ lib.optionals isAdmin [ "wheel" ];
+            shell = pkgs.zsh;
+          };
+          programs.zsh.enable = true;
+          home-manager.users.${username}.imports = [
+            self.modules.homeManager.${username}
+          ];
+        };
+
+      darwin.${username} =
+        { lib, pkgs, ... }:
+        {
+          users.users.${username} = {
+            name = username;
+            home = "/Users/${username}";
+            shell = pkgs.zsh;
+          };
+          system.primaryUser = lib.mkIf isAdmin username;
+          programs.zsh.enable = true;
+          home-manager.users.${username}.imports = [
+            self.modules.homeManager.${username}
+          ];
+        };
+
+      homeManager.${username} = {
+        imports = [ self.modules.homeManager.base ];
+        home.username = username;
       };
     };
 

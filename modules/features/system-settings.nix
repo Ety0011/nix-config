@@ -1,6 +1,6 @@
 { ... }:
 {
-  flake.modules.darwin.system-defaults = {
+  flake.modules.darwin.systemSettings = {
     system.defaults = {
       dock = {
         autohide = true;
@@ -16,11 +16,6 @@
         ShowPathbar = true;
         ShowStatusBar = true;
         FXEnableExtensionChangeWarning = false;
-      };
-
-      trackpad = {
-        Clicking = true; # tap to click
-        TrackpadThreeFingerDrag = true;
       };
 
       NSGlobalDomain = {

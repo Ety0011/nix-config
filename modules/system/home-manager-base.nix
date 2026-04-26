@@ -1,10 +1,6 @@
 { ... }:
 {
-  # Structural minimum for every homeManager configuration.
-  # This is not a user preference preset — it only wires the scaffolding
-  # that home-manager itself requires to function.
-
-  flake.modules.homeManager.hm-base =
+  flake.modules.homeManager.base =
     {
       config,
       pkgs,
