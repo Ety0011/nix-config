@@ -16,8 +16,6 @@
     mkNixos = system: hostName: {
       ${hostName} = inputs.nixpkgs.lib.nixosSystem {
         modules = [
-          inputs.self.common.base
-          inputs.self.modules.nixos.base
           inputs.self.modules.nixos.${hostName}
           {
             nixpkgs.hostPlatform = system;
@@ -30,8 +28,6 @@
     mkDarwin = system: hostName: {
       ${hostName} = inputs.nix-darwin.lib.darwinSystem {
         modules = [
-          inputs.self.common.base
-          inputs.self.modules.darwin.base
           inputs.self.modules.darwin.${hostName}
           {
             nixpkgs.hostPlatform = system;

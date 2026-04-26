@@ -18,6 +18,7 @@
         FXEnableExtensionChangeWarning = false;
       };
 
+
       NSGlobalDomain = {
         AppleShowAllExtensions = true;
         InitialKeyRepeat = 15;

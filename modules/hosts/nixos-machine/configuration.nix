@@ -6,7 +6,7 @@ in
 {
   flake.nixosConfigurations = inputs.self.lib.mkNixos system hostName;
 
-  # Hardware-specific overrides — add kernel modules, CPU microcode, or
-  # hardware-configuration.nix import here.
-  flake.modules.nixos.${hostName} = { };
+  flake.modules.nixos.${hostName} = {
+    imports = with inputs.self.modules.nixos; [ base ];
+  };
 }

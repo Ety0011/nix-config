@@ -6,6 +6,7 @@ in
 {
   flake.darwinConfigurations = inputs.self.lib.mkDarwin system hostName;
 
-  # Hardware-specific overrides — add kernel modules or hardware quirks here if needed.
-  flake.modules.darwin.${hostName} = { };
+  flake.modules.darwin.${hostName} = {
+    imports = with inputs.self.modules.darwin; [ base ];
+  };
 }

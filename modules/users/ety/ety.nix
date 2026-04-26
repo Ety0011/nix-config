@@ -9,7 +9,6 @@ in
     {
       nixos.${username} = { };
 
-      # Homebrew casks are darwin system-level but represent ety's personal apps.
       darwin.${username} = {
         homebrew = {
           enable = true;
