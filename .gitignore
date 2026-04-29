@@ -1,6 +1,7 @@
 # Nix
 result
 result-*
+flake.lock
 
 # direnv
 .direnv/

@@ -1,7 +1,9 @@
 { inputs, ... }:
 {
-  # Make pkgs available in perSystem contexts (e.g. the formatter).
-  # The unstable overlay is also applied so perSystem tooling can reach it.
+  # Defines pkgs for all perSystem contexts with allowUnfree and the
+  # unstable overlay. withSystem in base.nix threads this same pkgs
+  # instance into every host config — no need to re-import nixpkgs-unstable
+  # separately inside each platform base module.
   perSystem =
     { system, ... }:
     {

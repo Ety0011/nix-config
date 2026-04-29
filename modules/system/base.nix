@@ -1,8 +1,6 @@
-{ inputs, ... }:
+{ inputs, withSystem, self, ... }:
 let
   shared = {
-    nixpkgs.config.allowUnfree = true;
-
     nix.settings = {
       experimental-features = [ "nix-command" "flakes" ];
       substituters = [
@@ -29,17 +27,11 @@ let
 in
 {
   flake.modules.darwin.base =
-    { ... }:
+    { config, ... }:
     shared // {
-      system.stateVersion = 6;
+      nixpkgs.pkgs = withSystem config.nixpkgs.hostPlatform.system ({ pkgs, ... }: pkgs);
 
-      nixpkgs.overlays = [
-        (final: _prev: {
-          unstable = import inputs.nixpkgs-unstable {
-            inherit (final) config system;
-          };
-        })
-      ];
+      nix.registry.nixpkgs.flake = inputs.nixpkgs-darwin;
 
       nix.gc = {
         automatic = true;
@@ -53,25 +45,20 @@ in
 
       imports = [
         inputs.home-manager.darwinModules.home-manager
-      ] ++ (with inputs.self.modules.darwin; [
+      ] ++ (with self.modules.darwin; [
         systemSettings
         sops
+        zsh
+        direnv
       ]);
     };
 
   flake.modules.nixos.base =
-    { pkgs, ... }:
+    { config, ... }:
     shared // {
-      system.stateVersion = "25.05";
+      nixpkgs.pkgs = withSystem config.nixpkgs.hostPlatform.system ({ pkgs, ... }: pkgs);
 
-      nixpkgs.overlays = [
-        (final: _prev: {
-          unstable = import inputs.nixpkgs-unstable {
-            inherit (final) config;
-            system = pkgs.stdenv.hostPlatform.system;
-          };
-        })
-      ];
+      nix.registry.nixpkgs.flake = inputs.nixpkgs;
 
       nix.gc = {
         automatic = true;
@@ -86,9 +73,28 @@ in
 
       imports = [
         inputs.home-manager.nixosModules.home-manager
-      ] ++ (with inputs.self.modules.nixos; [
+      ] ++ (with self.modules.nixos; [
         sops
         ssh
+        zsh
+        direnv
       ]);
+    };
+
+  flake.modules.homeManager.base =
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
+    {
+      home.homeDirectory = lib.mkDefault (
+        if pkgs.stdenv.isDarwin
+        then "/Users/${config.home.username}"
+        else "/home/${config.home.username}"
+      );
+
+      programs.home-manager.enable = true;
     };
 }

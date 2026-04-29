@@ -1,49 +1,66 @@
-{ self, lib, ... }:
+{ self, ... }:
 let
   username = "ety";
 in
 {
-  flake.modules = lib.mkMerge [
-    (self.lib.mkUser username true)
-
+  flake.modules.nixos.${username} =
+    { lib, pkgs, ... }:
     {
-      nixos.${username} = { };
+      users.users.${username} = {
+        isNormalUser = true;
+        home = "/home/${username}";
+        extraGroups = [ "networkmanager" "wheel" ];
+        shell = pkgs.zsh;
+      };
+      home-manager.users.${username}.imports = [
+        self.modules.homeManager.${username}
+      ];
+    };
 
-      darwin.${username} = {
-        homebrew = {
-          enable = true;
-          onActivation.cleanup = "zap";
-          casks = [
-            "obs"
-            "unity-hub"
-            "microsoft-teams"
-          ];
-        };
+  flake.modules.darwin.${username} =
+    { pkgs, ... }:
+    {
+      users.users.${username} = {
+        name = username;
+        home = "/Users/${username}";
+        shell = pkgs.zsh;
+      };
+      system.primaryUser = username;
+      imports = with self.modules.darwin; [ homebrew ];
+      homebrew.casks = [
+        "obs"
+        "unity-hub"
+        "microsoft-teams"
+      ];
+      home-manager.users.${username}.imports = [
+        self.modules.homeManager.${username}
+      ];
+    };
+
+  flake.modules.homeManager.${username} =
+    { pkgs, ... }:
+    {
+      imports = with self.modules.homeManager; [
+        base
+        sops
+        ssh
+        zsh
+        git
+        direnv
+        starship
+        nixTools
+      ];
+
+      home.stateVersion = "24.11";
+
+      programs.git.settings.user = {
+        name = "Etienne";
+        email = "etienne.orio@orio.ch";
       };
 
-      homeManager.${username} =
-        { pkgs, ... }:
-        {
-          imports = with self.modules.homeManager; [
-            sops
-            ssh
-            zsh
-            git
-            direnv
-            starship
-            nixTools
-          ];
-
-          programs.git.settings.user = {
-            name = "Etienne";
-            email = "etienne.orio@orio.ch";
-          };
-
-          home.packages = with pkgs; [
-            lldb
-            rectangle
-          ];
-        };
-    }
-  ];
+      home.packages = with pkgs; [
+        lldb
+        rectangle
+      ];
+    };
 }
