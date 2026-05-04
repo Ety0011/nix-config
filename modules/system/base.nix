@@ -1,6 +1,6 @@
 { inputs, withSystem, self, ... }:
 let
-  shared = {
+  sharedSettings = {
     nix.settings = {
       experimental-features = [ "nix-command" "flakes" ];
       substituters = [
@@ -13,11 +13,14 @@ let
       ];
       trusted-users = [ "root" "@wheel" ];
       download-buffer-size = 1024 * 1024 * 1024;
+      max-jobs = "auto";
+      connect-timeout = 5;
     };
 
     nix.extraOptions = ''
       warn-dirty = false
       keep-outputs = true
+      use-xdg-base-directories = true
     '';
 
     home-manager.useGlobalPkgs = true;
@@ -27,9 +30,14 @@ let
 in
 {
   flake.modules.darwin.base =
-    { config, ... }:
-    shared // {
+    { config, pkgs, ... }:
+    sharedSettings // {
       nixpkgs.pkgs = withSystem config.nixpkgs.hostPlatform.system ({ pkgs, ... }: pkgs);
+
+      # Pin nix daemon version to our nixpkgs input — avoids version drift.
+      nix.package = pkgs.nix;
+
+      system.configurationRevision = self.rev or self.dirtyRev or null;
 
       nix.registry.nixpkgs.flake = inputs.nixpkgs-darwin;
 
@@ -43,6 +51,15 @@ in
         interval = { Weekday = 0; Hour = 3; Minute = 0; };
       };
 
+      # Prune old system profile generations — nix.gc only cleans user profiles.
+      launchd.daemons.nix-gc-system-profiles = {
+        command = "/bin/sh -c '/nix/var/nix/profiles/system/sw/bin/nix-env --delete-generations +3 --profile /nix/var/nix/profiles/system'";
+        serviceConfig = {
+          RunAtLoad = false;
+          StartCalendarInterval = [ { Weekday = 0; Hour = 3; Minute = 30; } ];
+        };
+      };
+
       imports = [
         inputs.home-manager.darwinModules.home-manager
       ] ++ (with self.modules.darwin; [
@@ -54,9 +71,11 @@ in
     };
 
   flake.modules.nixos.base =
-    { config, ... }:
-    shared // {
+    { config, pkgs, ... }:
+    sharedSettings // {
       nixpkgs.pkgs = withSystem config.nixpkgs.hostPlatform.system ({ pkgs, ... }: pkgs);
+
+      nix.package = pkgs.nix;
 
       nix.registry.nixpkgs.flake = inputs.nixpkgs;
 

@@ -31,6 +31,7 @@ in
         "obs"
         "unity-hub"
         "microsoft-teams"
+        "crossover"
       ];
       home-manager.users.${username}.imports = [
         self.modules.homeManager.${username}
@@ -43,12 +44,8 @@ in
       imports = with self.modules.homeManager; [
         base
         sops
-        ssh
-        zsh
-        git
-        direnv
-        starship
-        nixTools
+        cli   # zsh, git, ssh, direnv, starship
+        dev   # nixTools
       ];
 
       home.stateVersion = "24.11";
