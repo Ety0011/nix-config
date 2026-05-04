@@ -58,6 +58,7 @@ in
       home.packages = with pkgs; [
         lldb
         rectangle
+        claude-code
       ];
     };
 }
