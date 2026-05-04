@@ -32,6 +32,7 @@ in
         "unity-hub"
         "microsoft-teams"
         "crossover"
+        "steam"
       ];
       home-manager.users.${username}.imports = [
         self.modules.homeManager.${username}
@@ -58,7 +59,6 @@ in
       home.packages = with pkgs; [
         lldb
         rectangle
-        claude-code
       ];
     };
 }
