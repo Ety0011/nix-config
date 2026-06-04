@@ -9,7 +9,10 @@ in
       users.users.${username} = {
         isNormalUser = true;
         home = "/home/${username}";
-        extraGroups = [ "networkmanager" "wheel" ];
+        extraGroups = [
+          "networkmanager"
+          "wheel"
+        ];
         shell = pkgs.zsh;
       };
       home-manager.users.${username}.imports = [
@@ -26,13 +29,21 @@ in
         shell = pkgs.zsh;
       };
       system.primaryUser = username;
+      environment.systemPath = [ "/opt/homebrew/bin" "/opt/homebrew/sbin" ];
       imports = with self.modules.darwin; [ homebrew ];
       homebrew.casks = [
         "obs"
         "unity-hub"
         "microsoft-teams"
-        "crossover"
         "steam"
+        "ollama-app"
+      ];
+      # CLI tools go here
+      homebrew.brews = [
+        "pixi"
+        "ccache"
+        "poppler" # allows vsclaude code to read pdf
+        "p7zip"
       ];
       home-manager.users.${username}.imports = [
         self.modules.homeManager.${username}
@@ -45,8 +56,8 @@ in
       imports = with self.modules.homeManager; [
         base
         sops
-        cli   # zsh, git, ssh, direnv, starship
-        dev   # nixTools
+        cli # zsh, git, ssh, direnv, starship
+        dev # nixTools
       ];
 
       home.stateVersion = "24.11";
@@ -59,6 +70,10 @@ in
       home.packages = with pkgs; [
         lldb
         rectangle
+        claude-code
+        opencode
+        nodejs
+        htop
       ];
     };
 }
