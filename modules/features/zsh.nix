@@ -1,23 +1,26 @@
 { lib, config, ... }:
 let
   profiles = config.users.profiles;
-  anyWants = feat: lib.any (u: profiles.${u}.features.${feat}.enable) (lib.attrNames profiles);
 in
 {
   flake.modules.darwin.zsh =
-    { lib, ... }:
+    { lib, hostProfiles, ... }:
     {
-      config = lib.mkIf (anyWants "zsh") {
-        programs.zsh.enable = true;
-      };
+      config =
+        lib.mkIf (lib.any (u: hostProfiles.${u}.features.zsh.enable) (lib.attrNames hostProfiles))
+          {
+            programs.zsh.enable = true;
+          };
     };
 
   flake.modules.nixos.zsh =
-    { lib, ... }:
+    { lib, hostProfiles, ... }:
     {
-      config = lib.mkIf (anyWants "zsh") {
-        programs.zsh.enable = true;
-      };
+      config =
+        lib.mkIf (lib.any (u: hostProfiles.${u}.features.zsh.enable) (lib.attrNames hostProfiles))
+          {
+            programs.zsh.enable = true;
+          };
     };
 
   flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (

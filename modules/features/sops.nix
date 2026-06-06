@@ -6,16 +6,23 @@
 }:
 let
   profiles = config.users.profiles;
-  anyWants = feat: lib.any (u: profiles.${u}.features.${feat}.enable) (lib.attrNames profiles);
 in
 {
-  flake.modules.darwin.sops = lib.mkIf (anyWants "sops") {
-    imports = [ inputs.sops-nix.darwinModules.sops ];
-  };
+  flake.modules.darwin.sops =
+    { lib, hostProfiles, ... }:
+    {
+      imports = lib.optional (lib.any (u: hostProfiles.${u}.features.sops.enable) (
+        lib.attrNames hostProfiles
+      )) inputs.sops-nix.darwinModules.sops;
+    };
 
-  flake.modules.nixos.sops = lib.mkIf (anyWants "sops") {
-    imports = [ inputs.sops-nix.nixosModules.sops ];
-  };
+  flake.modules.nixos.sops =
+    { lib, hostProfiles, ... }:
+    {
+      imports = lib.optional (lib.any (u: hostProfiles.${u}.features.sops.enable) (
+        lib.attrNames hostProfiles
+      )) inputs.sops-nix.nixosModules.sops;
+    };
 
   flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
     username:

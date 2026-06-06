@@ -19,6 +19,9 @@ in
   config.flake.darwinConfigurations = lib.mapAttrs (
     hostName: hostCfg:
     inputs.nix-darwin.lib.darwinSystem {
+      specialArgs = {
+        hostProfiles = lib.filterAttrs (n: _: lib.elem n hostCfg.activeUsers) config.users.profiles;
+      };
       modules =
         darwinFeatures
         ++ map (u: self.modules.darwin.${u}) hostCfg.activeUsers
@@ -39,6 +42,9 @@ in
   config.flake.nixosConfigurations = lib.mapAttrs (
     hostName: hostCfg:
     inputs.nixpkgs.lib.nixosSystem {
+      specialArgs = {
+        hostProfiles = lib.filterAttrs (n: _: lib.elem n hostCfg.activeUsers) config.users.profiles;
+      };
       modules =
         nixosFeatures
         ++ map (u: self.modules.nixos.${u}) hostCfg.activeUsers
