@@ -1,13 +1,18 @@
-{ ... }:
+{ lib, config, ... }:
+let
+  profiles = config.users.profiles;
+in
 {
-  # Nix development tooling as its own feature so it can be imported
-  # independently from the rest of the CLI stack.
-  flake.modules.homeManager.nixTools =
+  flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
+    username:
     { pkgs, ... }:
-    {
-      home.packages = with pkgs; [
-        nixd # Nix language server
-        nixfmt-rfc-style # canonical nixfmt (RFC 166)
-      ];
-    };
+    lib.mkIf
+      (profiles.${username}.features.nixTools.enable && profiles.${username}.features.nixTools.allowed)
+      {
+        home.packages = with pkgs; [
+          nixd
+          nixfmt-rfc-style
+        ];
+      }
+  );
 }

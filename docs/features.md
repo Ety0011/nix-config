@@ -5,6 +5,7 @@ Tools and libraries used in this config — what they do and why.
 ---
 
 ## flake-parts
+
 **Input:** `github:hercules-ci/flake-parts`
 
 Structures the flake as a module system rather than a plain attribute set. Instead of
@@ -12,6 +13,7 @@ building `nixosConfigurations`, `darwinConfigurations`, `devShells`, etc. by han
 `flake.nix`, each concern is declared in its own module and flake-parts composes them.
 
 Provides:
+
 - `perSystem` — per-architecture outputs (devShells, packages, checks)
 - `flake.modules.*` — the custom option namespace for deferred host/user modules
 - `withSystem` — threads a perSystem value (pkgs) into a host-level evaluation
@@ -25,10 +27,12 @@ manual imports. flake-parts makes the whole tree one unified module system.
 ---
 
 ## import-tree
+
 **Input:** `github:vic/import-tree`
 
 Recursively discovers all `.nix` files under a directory and returns them as a flat
 imports list for flake-parts. Used as:
+
 ```nix
 flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules)
 ```
@@ -42,9 +46,11 @@ they are discovered. Untracked files are invisible to import-tree.
 ---
 
 ## nix-darwin
+
 **Input:** `github:nix-darwin/nix-darwin`
 
 Applies NixOS-style declarative configuration to macOS. Manages:
+
 - System defaults (Dock, Finder, keyboard repeat)
 - Homebrew packages (casks, brews) via the `nix-darwin-homebrew` module
 - Login shell registration (`programs.zsh.enable`)
@@ -58,6 +64,7 @@ Each darwin host generates a `darwinConfiguration` entry consumed by
 ---
 
 ## home-manager
+
 **Input:** `github:nix-community/home-manager`
 
 Manages the user environment: dotfiles, shell config, git, SSH, packages installed
@@ -75,6 +82,7 @@ does not evaluate nixpkgs a second time.
 ---
 
 ## sops-nix
+
 **Input:** `github:Mic92/sops-nix`
 
 Decrypts secrets at activation time using age/GPG keys and makes them available
@@ -86,16 +94,17 @@ integration from `modules/features/sops.nix`.
 ---
 
 ## treefmt-nix
+
 **Input:** `github:numtide/treefmt-nix`
 
 Wraps `treefmt` (multi-formatter runner) as a flake-parts module. Configured in
 `modules/flake/formatter.nix`:
 
-| Formatter | Files |
-|---|---|
-| `nixfmt-rfc-style` | `*.nix` |
-| `prettier` | `*.md`, `*.json`, `*.yaml` |
-| `shfmt` | `*.sh` |
+| Formatter          | Files                      |
+| ------------------ | -------------------------- |
+| `nixfmt-rfc-style` | `*.nix`                    |
+| `prettier`         | `*.md`, `*.json`, `*.yaml` |
+| `shfmt`            | `*.sh`                     |
 
 Exposes `checks.aarch64-darwin.treefmt` (CI-ready format check) and
 `formatter.aarch64-darwin` (the `nix fmt` target).
@@ -106,13 +115,14 @@ Exposes `checks.aarch64-darwin.treefmt` (CI-ready format check) and
 
 Three inputs:
 
-| Input | Branch | Used for |
-|---|---|---|
-| `nixpkgs` | `nixos-25.11` | NixOS hosts |
-| `nixpkgs-darwin` | `nixpkgs-25.11-darwin` | darwin hosts |
-| `nixpkgs-unstable` | `nixos-unstable` | bleeding-edge packages via overlay |
+| Input              | Branch                 | Used for                           |
+| ------------------ | ---------------------- | ---------------------------------- |
+| `nixpkgs`          | `nixos-25.11`          | NixOS hosts                        |
+| `nixpkgs-darwin`   | `nixpkgs-25.11-darwin` | darwin hosts                       |
+| `nixpkgs-unstable` | `nixos-unstable`       | bleeding-edge packages via overlay |
 
 The unstable overlay is applied in `modules/flake/nixpkgs.nix`:
+
 ```nix
 overlays = [(final: _: { unstable = import inputs.nixpkgs-unstable { ... }; })];
 ```

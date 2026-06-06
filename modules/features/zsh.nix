@@ -1,18 +1,28 @@
-{ ... }:
+{ lib, config, ... }:
+let
+  profiles = config.users.profiles;
+  anyWants = feat: lib.any (u: profiles.${u}.features.${feat}.enable) (lib.attrNames profiles);
+in
 {
-  # System-level: register zsh as a valid login shell.
-  flake.modules.nixos.zsh = {
-    programs.zsh.enable = true;
-  };
-
-  flake.modules.darwin.zsh = {
-    programs.zsh.enable = true;
-  };
-
-  # homeManager: full zsh user configuration.
-  flake.modules.homeManager.zsh =
-    { pkgs, ... }:
+  flake.modules.darwin.zsh =
+    { lib, ... }:
     {
+      config = lib.mkIf (anyWants "zsh") {
+        programs.zsh.enable = true;
+      };
+    };
+
+  flake.modules.nixos.zsh =
+    { lib, ... }:
+    {
+      config = lib.mkIf (anyWants "zsh") {
+        programs.zsh.enable = true;
+      };
+    };
+
+  flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
+    username:
+    lib.mkIf (profiles.${username}.features.zsh.enable && profiles.${username}.features.zsh.allowed) {
       programs.zsh = {
         enable = true;
         autosuggestion.enable = true;
@@ -24,14 +34,7 @@
           ignoreSpace = true;
           share = true;
         };
-        shellAliases = {
-          # Picks the right rebuild command depending on the platform.
-          update =
-            if pkgs.stdenv.isDarwin then
-              "sudo darwin-rebuild switch --flake ~/nix-config"
-            else
-              "sudo nixos-rebuild switch --flake ~/nix-config";
-        };
       };
-    };
+    }
+  );
 }

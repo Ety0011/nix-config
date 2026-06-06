@@ -1,22 +1,27 @@
-{ ... }:
+{ lib, config, ... }:
+let
+  profiles = config.users.profiles;
+  anyWants = feat: lib.any (u: profiles.${u}.features.${feat}.enable) (lib.attrNames profiles);
+in
 {
-  # NixOS: enable the OpenSSH server so the machine is remotely accessible.
-  flake.modules.nixos.ssh = {
-    services.openssh = {
-      enable = true;
-      openFirewall = true;
-      settings = {
-        # Disable password auth — use keys only (safer default)
-        PasswordAuthentication = false;
-        PermitRootLogin = "no";
+  flake.modules.nixos.ssh =
+    { lib, ... }:
+    {
+      config = lib.mkIf (anyWants "ssh") {
+        services.openssh = {
+          enable = true;
+          openFirewall = true;
+          settings = {
+            PasswordAuthentication = false;
+            PermitRootLogin = "no";
+          };
+        };
       };
     };
-  };
 
-  # homeManager: SSH client config shared across all users on all platforms.
-  flake.modules.homeManager.ssh =
-    { ... }:
-    {
+  flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
+    username:
+    lib.mkIf (profiles.${username}.features.ssh.enable && profiles.${username}.features.ssh.allowed) {
       programs.ssh = {
         enable = true;
         enableDefaultConfig = false;
@@ -25,5 +30,6 @@
           serverAliveCountMax = 3;
         };
       };
-    };
+    }
+  );
 }

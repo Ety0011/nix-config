@@ -71,24 +71,27 @@ flake.nix
 ## Key mechanisms
 
 ### withSystem for pkgs
+
 `nixpkgs.pkgs = withSystem config.nixpkgs.hostPlatform.system ({ pkgs, ... }: pkgs)`
 threads the perSystem pkgs (with unstable overlay) into each host — avoids importing
 nixpkgs-unstable twice.
 
 ### darwinHosts builder
+
 `builder.nix` declares `darwinHosts` as a typed `attrsOf submodule` option.
 Each host declares `system`, `stateVersion`, `users`. Builder generates
 `flake.darwinConfigurations` via `lib.mapAttrs`. NixOS hosts still use `nixosSystem`
 directly — a `nixosHosts` builder can be added when a second NixOS host exists.
 
 ### Features are opt-in
+
 Nothing is imported unless explicitly listed. `darwin.base` has zero feature imports.
 Features are imported in the user module (`darwin.ety`, `nixos.ety`, `homeManager.ety`)
 or in host-specific inline config blocks.
 
 ## Machines
 
-| Host | System | Status |
-|---|---|---|
-| Etiennes-MacBook-Pro | aarch64-darwin | daily driver |
-| nixos-machine | x86_64-linux | not yet installed |
+| Host                 | System         | Status            |
+| -------------------- | -------------- | ----------------- |
+| Etiennes-MacBook-Pro | aarch64-darwin | daily driver      |
+| nixos-machine        | x86_64-linux   | not yet installed |

@@ -20,6 +20,7 @@ nix develop .#nix   # dev shell
 **Add a CLI feature** → create `modules/features/my-feature.nix`, import in user module
 
 **New feature file:**
+
 ```nix
 { ... }:
 {
@@ -30,6 +31,7 @@ nix develop .#nix   # dev shell
 ```
 
 **New darwin host** → `modules/hosts/<hostname>/configuration.nix`:
+
 ```nix
 darwinHosts."My-Machine" = { system = "aarch64-darwin"; stateVersion = 6; users = [ "ety" ]; };
 ```
@@ -37,6 +39,7 @@ darwinHosts."My-Machine" = { system = "aarch64-darwin"; stateVersion = 6; users 
 **New user** → `modules/users/<name>/<name>.nix` — model after `modules/users/ety/ety.nix`.
 
 ## Conventions
+
 - Module keys: camelCase (`nixTools`, `darwinSettings`)
 - File names: kebab-case (`nix-tools.nix`, `darwin-settings.nix`)
 - Host/username: natural casing (`Etiennes-MacBook-Pro`, `ety`)
