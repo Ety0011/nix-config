@@ -25,7 +25,7 @@ in
 
   flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
     username:
-    lib.mkIf (profiles.${username}.features.zsh.enable && profiles.${username}.features.zsh.allowed) {
+    lib.mkIf (profiles.${username}.features.zsh.enable) {
       programs.zsh = {
         enable = true;
         autosuggestion.enable = true;

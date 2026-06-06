@@ -1,16 +1,16 @@
-{ self, ... }:
+{ self, lib, ... }:
 let
   username = "ety";
 in
 {
-  users.profiles.${username} = {
-    features.git.enable = true;
-    features.zsh.enable = true;
-    features.ssh.enable = true;
-    features.direnv.enable = true;
-    features.starship.enable = true;
-    features.nixTools.enable = true;
-    features.sops.enable = true;
+  users.profiles.${username}.features = {
+    git.enable = lib.mkDefault true;
+    zsh.enable = lib.mkDefault true;
+    ssh.enable = lib.mkDefault true;
+    direnv.enable = lib.mkDefault true;
+    starship.enable = lib.mkDefault true;
+    nixTools.enable = lib.mkDefault true;
+    sops.enable = lib.mkDefault true;
   };
 
   flake.modules.darwin.${username} =

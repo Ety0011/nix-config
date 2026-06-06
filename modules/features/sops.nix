@@ -26,7 +26,7 @@ in
 
   flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
     username:
-    lib.mkIf (profiles.${username}.features.sops.enable && profiles.${username}.features.sops.allowed) {
+    lib.mkIf (profiles.${username}.features.sops.enable) {
       imports = [ inputs.sops-nix.homeManagerModules.sops ];
     }
   );

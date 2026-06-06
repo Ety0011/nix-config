@@ -33,14 +33,12 @@ in
 
   flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
     username:
-    lib.mkIf
-      (profiles.${username}.features.direnv.enable && profiles.${username}.features.direnv.allowed)
-      {
-        programs.direnv = {
-          enable = true;
-          enableZshIntegration = true;
-          nix-direnv.enable = true;
-        };
-      }
+    lib.mkIf (profiles.${username}.features.direnv.enable) {
+      programs.direnv = {
+        enable = true;
+        enableZshIntegration = true;
+        nix-direnv.enable = true;
+      };
+    }
   );
 }

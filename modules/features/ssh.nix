@@ -22,7 +22,7 @@ in
 
   flake.modules.homeManager = lib.genAttrs (lib.attrNames profiles) (
     username:
-    lib.mkIf (profiles.${username}.features.ssh.enable && profiles.${username}.features.ssh.allowed) {
+    lib.mkIf (profiles.${username}.features.ssh.enable) {
       programs.ssh = {
         enable = true;
         enableDefaultConfig = false;

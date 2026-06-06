@@ -22,12 +22,6 @@ let
     };
   };
 
-  feat = name: lib.mkEnableOption name;
-  allowed = lib.mkOption {
-    type = lib.types.bool;
-    default = true;
-  };
-
   userSubmodule = { name, ... }: {
     options = {
       username = lib.mkOption {
@@ -35,38 +29,14 @@ let
         default = name;
       };
       features = {
-        git = {
-          enable = feat "git";
-          allowed = allowed;
-        };
-        zsh = {
-          enable = feat "zsh";
-          allowed = allowed;
-        };
-        ssh = {
-          enable = feat "ssh";
-          allowed = allowed;
-        };
-        direnv = {
-          enable = feat "direnv";
-          allowed = allowed;
-        };
-        starship = {
-          enable = feat "starship";
-          allowed = allowed;
-        };
-        nixTools = {
-          enable = feat "nixTools";
-          allowed = allowed;
-        };
-        sops = {
-          enable = feat "sops";
-          allowed = allowed;
-        };
-        syncthing = {
-          enable = feat "syncthing";
-          allowed = allowed;
-        };
+        git.enable = lib.mkEnableOption "git";
+        zsh.enable = lib.mkEnableOption "zsh";
+        ssh.enable = lib.mkEnableOption "ssh";
+        direnv.enable = lib.mkEnableOption "direnv";
+        starship.enable = lib.mkEnableOption "starship";
+        nixTools.enable = lib.mkEnableOption "nixTools";
+        sops.enable = lib.mkEnableOption "sops";
+        syncthing.enable = lib.mkEnableOption "syncthing";
       };
     };
   };
@@ -101,7 +71,7 @@ in
     users.profiles = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule userSubmodule);
       default = { };
-      description = "User profiles. Key must match darwin/nixos/home module name.";
+      description = "User profiles. Key must match darwin/nixos/homeManager module name.";
     };
   };
 }
