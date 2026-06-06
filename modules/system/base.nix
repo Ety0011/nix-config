@@ -1,40 +1,42 @@
 { inputs, withSystem, self, ... }:
-let
-  sharedSettings = {
-    nix.settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      substituters = [
-        "https://cache.nixos.org?priority=10"
-        "https://nix-community.cachix.org"
-      ];
-      trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ];
-      trusted-users = [ "root" "@wheel" ];
-      download-buffer-size = 1024 * 1024 * 1024;
-      max-jobs = "auto";
-      connect-timeout = 5;
-    };
-
-    nix.extraOptions = ''
-      warn-dirty = false
-      keep-outputs = true
-      use-xdg-base-directories = true
-    '';
-
-    home-manager.useGlobalPkgs = true;
-    home-manager.useUserPackages = true;
-    home-manager.backupFileExtension = "home-manager.backup";
-  };
-in
 {
   flake.modules.darwin.base =
     { config, pkgs, ... }:
-    sharedSettings // {
+    {
+      nix.settings = {
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        substituters = [
+          "https://cache.nixos.org?priority=10"
+          "https://nix-community.cachix.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        ];
+        trusted-users = [
+          "root"
+          "@wheel"
+        ];
+        download-buffer-size = 1024 * 1024 * 1024;
+        max-jobs = "auto";
+        connect-timeout = 5;
+      };
+
+      nix.extraOptions = ''
+        warn-dirty = false
+        keep-outputs = true
+        use-xdg-base-directories = true
+      '';
+
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.backupFileExtension = "home-manager.backup";
+
       nixpkgs.pkgs = withSystem config.nixpkgs.hostPlatform.system ({ pkgs, ... }: pkgs);
 
-      # Pin nix daemon version to our nixpkgs input — avoids version drift.
       nix.package = pkgs.nix;
 
       system.configurationRevision = self.rev or self.dirtyRev or null;
@@ -43,12 +45,20 @@ in
 
       nix.gc = {
         automatic = true;
-        interval = { Weekday = 0; Hour = 2; Minute = 0; };
+        interval = {
+          Weekday = 0;
+          Hour = 2;
+          Minute = 0;
+        };
         options = "--delete-older-than 7d";
       };
       nix.optimise = {
         automatic = true;
-        interval = { Weekday = 0; Hour = 3; Minute = 0; };
+        interval = {
+          Weekday = 0;
+          Hour = 3;
+          Minute = 0;
+        };
       };
 
       # Prune old system profile generations — nix.gc only cleans user profiles.
@@ -56,23 +66,58 @@ in
         command = "/bin/sh -c '/nix/var/nix/profiles/system/sw/bin/nix-env --delete-generations +3 --profile /nix/var/nix/profiles/system'";
         serviceConfig = {
           RunAtLoad = false;
-          StartCalendarInterval = [ { Weekday = 0; Hour = 3; Minute = 30; } ];
+          StartCalendarInterval = [
+            {
+              Weekday = 0;
+              Hour = 3;
+              Minute = 30;
+            }
+          ];
         };
       };
 
-      imports = [
-        inputs.home-manager.darwinModules.home-manager
-      ] ++ (with self.modules.darwin; [
-        systemSettings
-        sops
-        zsh
-        direnv
-      ]);
+      homebrew.enable = true;
+      # "zap" fails with Error: Invalid usage: `brew bundle install --cleanup` requires `--force`, `--force-cleanup` or `$HOMEBREW_ASK`.
+      homebrew.onActivation.cleanup = "none";
+
+      imports = [ inputs.home-manager.darwinModules.home-manager ];
     };
 
   flake.modules.nixos.base =
     { config, pkgs, ... }:
-    sharedSettings // {
+    {
+      nix.settings = {
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        substituters = [
+          "https://cache.nixos.org?priority=10"
+          "https://nix-community.cachix.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        ];
+        trusted-users = [
+          "root"
+          "@wheel"
+        ];
+        download-buffer-size = 1024 * 1024 * 1024;
+        max-jobs = "auto";
+        connect-timeout = 5;
+      };
+
+      nix.extraOptions = ''
+        warn-dirty = false
+        keep-outputs = true
+        use-xdg-base-directories = true
+      '';
+
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.backupFileExtension = "home-manager.backup";
+
       nixpkgs.pkgs = withSystem config.nixpkgs.hostPlatform.system ({ pkgs, ... }: pkgs);
 
       nix.package = pkgs.nix;
@@ -90,14 +135,7 @@ in
         dates = [ "Sun 03:00" ];
       };
 
-      imports = [
-        inputs.home-manager.nixosModules.home-manager
-      ] ++ (with self.modules.nixos; [
-        sops
-        ssh
-        zsh
-        direnv
-      ]);
+      imports = [ inputs.home-manager.nixosModules.home-manager ];
     };
 
   flake.modules.homeManager.base =

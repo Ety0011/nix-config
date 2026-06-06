@@ -33,8 +33,8 @@ Tried declaring typed `host.name`, `host.username`, `host.stateVersion` options 
 ### Features are opt-in at every level
 Nothing is imported unless explicitly listed. `base.nix` imports only universal system-level features. Users import exactly the features they want. Aggregators (`cli.nix`, `dev.nix`) group related features for convenience but are themselves opt-in.
 
-### Aggregators live in `modules/home/`
-`cli.nix` groups: zsh, git, ssh, direnv, starship. `dev.nix` groups: nixTools. These are homeManager-only aggregators. Adding a new tool to the CLI stack means one line in `cli.nix` — every user importing `cli` gets it automatically.
+### No aggregators
+`cli.nix` and `dev.nix` were removed — they added a named indirection layer that hid the actual feature graph without adding value. Users import features directly. The feature graph is visible by reading the user module.
 
 ### macOS-only packages via Homebrew casks
 GUI apps not packaged for Darwin in nixpkgs go in `homebrew.casks` inside the user's `darwin.*` module. nixpkgs packages available on Darwin go in `home.packages`. Never add Linux-only packages to `home.packages` without a `lib.optionals` guard or better — put them in the `nixos.*` context directly.
@@ -52,6 +52,7 @@ macOS system defaults (Dock, Finder, keyboard) are imported in `darwin.base` as 
 ## Rejected ideas
 
 - `flake-parts partitions` for dev tooling isolation — too much complexity for current needs, can revisit later
+- Aggregator modules (`cli.nix`, `dev.nix`) — removed; hid the feature graph, added indirection with zero value; users import features directly
 - `osConfig` via `extraSpecialArgs` to homeManager — anti-pattern, homeManager modules should be self-contained
 - `specialArgs` in general — sign of fighting the pattern, avoided throughout
 - Per-user files in host `users/` directory — replaced by a single `users.nix` list, then merged into `configuration.nix` entirely

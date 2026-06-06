@@ -2,6 +2,7 @@
 
 Nix configuration for Etienne's machines using flake-parts + import-tree (dendritic pattern).
 import-tree auto-discovers every .nix file under modules/ — no manual imports needed.
+**New .nix files must be git-staged (`git add`) before they are discovered by import-tree.**
 
 ## Machines
 - **Etiennes-MacBook-Pro** — aarch64-darwin, daily driver
@@ -23,7 +24,7 @@ import-tree auto-discovers every .nix file under modules/ — no manual imports 
 ## Adding a feature
 1. Create `modules/features/my-feature.nix`
 2. Declare `flake.modules.darwin.myFeature`, `flake.modules.nixos.myFeature`, and/or `flake.modules.homeManager.myFeature` as needed
-3. Import it where appropriate — in `base.nix` if universal, in a user module if personal, in an aggregator if it fits cli/dev
+3. Import it where appropriate — in `base.nix` if universal, in a user module if personal
 
 ## Adding a host (darwin)
 Add an entry to `darwinHosts` in a new `modules/hosts/<machine-name>/configuration.nix`:

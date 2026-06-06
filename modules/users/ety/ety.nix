@@ -15,6 +15,12 @@ in
         ];
         shell = pkgs.zsh;
       };
+      imports = with self.modules.nixos; [
+        sops
+        ssh
+        zsh
+        direnv
+      ];
       home-manager.users.${username}.imports = [
         self.modules.homeManager.${username}
       ];
@@ -30,7 +36,12 @@ in
       };
       system.primaryUser = username;
       environment.systemPath = [ "/opt/homebrew/bin" "/opt/homebrew/sbin" ];
-      imports = with self.modules.darwin; [ homebrew ];
+      imports = with self.modules.darwin; [
+        darwinSettings
+        sops
+        zsh
+        direnv
+      ];
       homebrew.casks = [
         "obs"
         "unity-hub"
@@ -56,8 +67,12 @@ in
       imports = with self.modules.homeManager; [
         base
         sops
-        cli # zsh, git, ssh, direnv, starship
-        dev # nixTools
+        zsh
+        git
+        ssh
+        direnv
+        starship
+        nixTools
       ];
 
       home.stateVersion = "24.11";

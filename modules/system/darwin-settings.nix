@@ -1,6 +1,6 @@
 { ... }:
 {
-  flake.modules.darwin.systemSettings = {
+  flake.modules.darwin.darwinSettings = {
     system.defaults = {
       dock = {
         autohide = true;
@@ -18,7 +18,6 @@
         ShowStatusBar = true;
         FXEnableExtensionChangeWarning = false;
       };
-
 
       NSGlobalDomain = {
         AppleShowAllExtensions = true;
