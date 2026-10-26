@@ -1,11 +1,4 @@
 {
-  flake.modules.darwin.base.home-manager.sharedModules = [
-    { programs.zsh.shellAliases.update = "nh darwin switch"; }
-  ];
-  flake.modules.nixos.base.home-manager.sharedModules = [
-    { programs.zsh.shellAliases.update = "nh os switch"; }
-  ];
-
   flake.modules.homeManager.base =
     { config, pkgs, ... }:
     {
