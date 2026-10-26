@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, inputs, ... }:
 {
   configurations.nixos.typhon.module = {
     imports =
@@ -6,7 +6,11 @@
         base
         ety
       ])
-      ++ [ ./_hardware.nix ];
+      ++ [
+        inputs.disko.nixosModules.disko
+        ./_disko.nix
+        ./_hardware.nix
+      ];
     system.stateVersion = "26.05";
     home-manager.users.ety.home.stateVersion = "26.05";
   };

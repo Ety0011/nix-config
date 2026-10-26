@@ -1,15 +1,9 @@
-# Placeholder until typhon is installed; replace with the output of
-# `nixos-generate-config`.
+# Placeholder until typhon is installed. Replace with
+# `hardware.facter.reportPath = ./facter.json;` once nixos-anywhere has
+# generated the report (`--generate-hardware-config nixos-facter ./facter.json`).
 {
   nixpkgs.hostPlatform = "x86_64-linux";
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
-  };
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
-    fsType = "vfat";
-  };
+  zramSwap.enable = true;
 }
