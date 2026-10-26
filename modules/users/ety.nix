@@ -64,8 +64,8 @@ in
       };
       home.packages = with pkgs; [
         lldb
-        claude-code
-        opencode
+        unstable.claude-code
+        unstable.opencode
         nodejs
         htop
       ];
