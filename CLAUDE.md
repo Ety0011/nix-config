@@ -7,8 +7,8 @@ Dendritic flake for Etienne's Hosts (`helios`: aarch64-darwin, `typhon`: x86_64-
 ```bash
 nix flake check                           # evaluates and builds every Host
 nix fmt                                   # treefmt
-darwin-rebuild build --flake .#helios     # build before switching
-nix store diff-closures /run/current-system ./result
+nh darwin build                           # build helios and diff against the running system
+update                                    # alias: nh darwin switch / nh os switch
 ```
 
 ## Rules
