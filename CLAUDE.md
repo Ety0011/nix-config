@@ -18,7 +18,8 @@ update                                    # alias: nh darwin switch / nh os swit
 - Reach other modules through `config.flake.modules` by closure; share values via declared top-level options.
 - Import each module along exactly one path (`flake.modules` values are not deduplicated).
 - New files are invisible to the flake until `git add`ed.
-- `helios` is a live install: keep `system.stateVersion = 6`, its `home.stateVersion = "24.11"`, and Homebrew `onActivation.cleanup = "none"` until every cask and brew is ported.
+- `helios` is a live install: keep `system.stateVersion = 6` and its `home.stateVersion = "24.11"`.
+- Homebrew cleanup is `"uninstall"`: a cask or brew dropped from `homebrew.*` is removed on the next switch. GUI apps go in casks, CLI tools in nixpkgs (`docs/adr/0003`).
 
 ## Agent skills
 

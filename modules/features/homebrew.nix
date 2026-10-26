@@ -1,9 +1,9 @@
 {
   flake.modules.darwin.base = {
     homebrew.enable = true;
-    # Keep "none" until every cask and brew on helios is declared; anything
-    # stricter uninstalls what is missing.
-    homebrew.onActivation.cleanup = "none";
+    # Anything installed but not declared is removed on switch. Not "zap":
+    # that also deletes app settings and data.
+    homebrew.onActivation.cleanup = "uninstall";
     environment.systemPath = [
       "/opt/homebrew/bin"
       "/opt/homebrew/sbin"

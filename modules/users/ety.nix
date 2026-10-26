@@ -12,28 +12,19 @@ in
         shell = pkgs.zsh;
       };
       system.primaryUser = "ety";
+      # GUI apps stay in Homebrew: they self-update, and macOS privacy grants
+      # (camera, mic, screen) survive updates. See docs/adr/0003.
       homebrew.casks = [
         "capslocknodelay"
         "microsoft-teams"
         "obs"
         "obsidian"
-        "steam"
-        "unity-hub"
       ];
+      # Colima's Docker stack integrates better from Homebrew on macOS.
       homebrew.brews = [
-        "ccache"
         "colima"
         "docker"
         "docker-compose"
-        "fpart"
-        "gh"
-        "p7zip"
-        "pixi"
-        "poppler"
-        "python@3.14"
-        "rclone"
-        "ripgrep"
-        "rsync"
       ];
       home-manager.users.ety = {
         imports = [ homeManager.ety ];
@@ -68,6 +59,10 @@ in
         unstable.opencode
         nodejs
         htop
+        gh
+        pixi
+        rclone
+        rsync
       ];
     };
 }
