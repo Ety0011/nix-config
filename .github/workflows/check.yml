@@ -1,0 +1,21 @@
+name: check
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  flake-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Each runner builds the checks for its own system:
+        # macos -> darwin-helios, ubuntu -> nixos-typhon. Both run treefmt.
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: cachix/install-nix-action@v31.11.3
+      - run: nix flake check -L
