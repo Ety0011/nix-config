@@ -34,24 +34,26 @@ in
     home-manager.users.ety =
       { lib, pkgs, ... }:
       let
-        # Nightly mirror of ~ to the NAS. The `i14-nas` remote and its
-        # credentials stay in the unmanaged ~/.config/rclone/rclone.conf.
+        # Nightly mirror of ~ to the NAS, which keeps its own versions. The
+        # `i14-nas` remote and its credentials stay in the unmanaged
+        # ~/.config/rclone/rclone.conf.
         backup = pkgs.writeShellApplication {
           name = "backup-helios";
           runtimeInputs = [ pkgs.rclone ];
           text = ''
-            log="$HOME/.local/state/backup/rclone.log"
-            mkdir -p "$(dirname "$log")"
-            rclone sync "$HOME" i14-nas:home/backup/helios \
+            # ~/Library/Logs shows up in Console.app and is outside the backup.
+            # NOTICE logs errors plus one summary line per run.
+            log="$HOME/Library/Logs/backup-helios.log"
+            if ! rclone sync "$HOME" i14-nas:home/backup/helios \
               --filter-from ${pkgs.writeText "backup-helios-filters" ''
                 - .DS_Store
-                - /.local/state/backup/**
                 + /Library/LaunchAgents/**
                 - /Library/**
                 - /Documents/games/**
                 - /Documents/projects/**
                 + /.ssh/**
                 + /.local/**
+                - /.*/**
                 - .*
               ''} \
               --modify-window 1s \
@@ -61,7 +63,13 @@ in
               --metadata \
               --fast-list \
               --log-file "$log" \
-              --log-level INFO
+              --log-level NOTICE \
+              --stats 24h \
+              --stats-one-line \
+              --stats-log-level NOTICE; then
+              /usr/bin/osascript -e 'display notification "See ~/Library/Logs/backup-helios.log" with title "Backup to NAS failed"'
+              exit 1
+            fi
           '';
         };
       in
