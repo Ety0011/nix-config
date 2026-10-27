@@ -13,54 +13,34 @@ let
       ];
       download-buffer-size = 1024 * 1024 * 1024;
       connect-timeout = 5;
+      warn-dirty = false;
+      use-xdg-base-directories = true;
     };
-    nix.extraOptions = ''
-      warn-dirty = false
-      keep-outputs = true
-      use-xdg-base-directories = true
-    '';
   };
 in
 {
-  flake.modules.darwin.base =
-    { ... }:
-    {
-      imports = [ settings ];
-      # macOS admins are in `admin`; `wheel` holds only root.
-      nix.settings.trusted-users = [ "@admin" ];
-      nix.gc = {
-        automatic = true;
-        options = "--delete-older-than 7d";
-      };
-      nix.optimise.automatic = true;
-      launchd.daemons.nix-gc-system-profiles = {
-        command = "/bin/sh -c '/nix/var/nix/profiles/system/sw/bin/nix-env --delete-generations +3 --profile /nix/var/nix/profiles/system'";
-        serviceConfig = {
-          RunAtLoad = false;
-          StartCalendarInterval = [
-            {
-              Weekday = 0;
-              Hour = 3;
-              Minute = 30;
-            }
-          ];
-        };
-      };
+  flake.modules.darwin.base = {
+    imports = [ settings ];
+    # macOS admins are in `admin`; `wheel` holds only root.
+    nix.settings.trusted-users = [ "@admin" ];
+    nix.gc = {
+      automatic = true;
+      options = "--delete-older-than 7d";
     };
+    nix.optimise.automatic = true;
+  };
 
-  flake.modules.nixos.base =
-    { ... }:
-    {
-      imports = [ settings ];
-      nix.settings.trusted-users = [ "@wheel" ];
-      nix.gc = {
-        automatic = true;
-        dates = "Sun 02:00";
-        options = "--delete-older-than 7d";
-      };
-      nix.optimise = {
-        automatic = true;
-        dates = [ "Sun 03:00" ];
-      };
+  flake.modules.nixos.base = {
+    imports = [ settings ];
+    nix.settings.trusted-users = [ "@wheel" ];
+    nix.gc = {
+      automatic = true;
+      dates = "Sun 02:00";
+      options = "--delete-older-than 7d";
     };
+    nix.optimise = {
+      automatic = true;
+      dates = [ "Sun 03:00" ];
+    };
+  };
 }
