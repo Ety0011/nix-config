@@ -6,11 +6,7 @@ in
   flake.modules.darwin.ety =
     { pkgs, ... }:
     {
-      users.users.ety = {
-        name = "ety";
-        home = "/Users/ety";
-        shell = pkgs.zsh;
-      };
+      users.users.ety.home = "/Users/ety";
       system.primaryUser = "ety";
       # GUI apps stay in Homebrew: they self-update, and macOS privacy grants
       # (camera, mic, screen) survive updates. See docs/adr/0003.

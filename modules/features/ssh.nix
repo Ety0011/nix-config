@@ -11,9 +11,6 @@
   flake.modules.homeManager.base.programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    settings."*" = {
-      ServerAliveInterval = 60;
-      ServerAliveCountMax = 3;
-    };
+    settings."*".ServerAliveInterval = 60;
   };
 }

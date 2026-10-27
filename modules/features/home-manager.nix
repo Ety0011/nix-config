@@ -19,8 +19,4 @@ in
     imports = [ inputs.home-manager.nixosModules.home-manager ];
     config = settings;
   };
-
-  flake.modules.homeManager.base = {
-    programs.home-manager.enable = true;
-  };
 }

@@ -4,11 +4,9 @@
       autohide = true;
       show-recents = false;
       mru-spaces = false;
-      orientation = "bottom";
       minimize-to-application = true;
     };
     finder = {
-      AppleShowAllExtensions = true;
       AppleShowAllFiles = true;
       FXPreferredViewStyle = "clmv";
       ShowPathbar = true;
