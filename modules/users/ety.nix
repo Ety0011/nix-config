@@ -48,6 +48,11 @@ in
           "wheel"
         ];
         shell = pkgs.zsh;
+        # helios's key. The password is set once with `passwd` at install
+        # (see modules/hosts/typhon/default.nix).
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIz9aScitAwf5r+6/Aaoxw6q4rLSVq5ij/mK48th5T1z ety@helios"
+        ];
       };
       home-manager.users.ety.imports = [ homeManager.ety ];
     };

@@ -44,6 +44,8 @@
                     mountpoint = "/home";
                     inherit mountOptions;
                   };
+                  # Required by snapper for /home snapshots (ADR 0002).
+                  "/home/.snapshots" = { };
                   "/nix" = {
                     mountpoint = "/nix";
                     inherit mountOptions;
