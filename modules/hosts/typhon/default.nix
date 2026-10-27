@@ -1,12 +1,4 @@
-# Install from helios (see docs/research/best-of-nix.md §4.1):
-#   1. Set the disk in _disko.nix (`lsblk` on typhon's installer).
-#   2. nix run github:nix-community/nixos-anywhere -- --flake .#typhon \
-#        --disk-encryption-keys /tmp/secret.key <(read -s p; printf %s "$p") \
-#        --generate-hardware-config nixos-facter ./modules/hosts/typhon/facter.json \
-#        --phases kexec,disko,install root@<installer-ip>
-#   3. Set ety's password before the first boot:
-#        ssh root@<installer-ip> nixos-enter --root /mnt -c 'passwd ety'
-#      then reboot, and replace _hardware.nix with the facter report.
+# Not installed yet. Install steps: docs/research/rebuild-from-zero.md §3.3.
 { config, inputs, ... }:
 {
   configurations.nixos.typhon.module = {
