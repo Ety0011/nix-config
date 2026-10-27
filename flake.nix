@@ -26,7 +26,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    import-tree.url = "github:vic/import-tree";
+    import-tree.url = "github:denful/import-tree";
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
