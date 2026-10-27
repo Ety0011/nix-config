@@ -31,11 +31,62 @@ in
       "docker"
       "docker-compose"
     ];
-    home-manager.users.ety = {
-      imports = [ homeManager.ety ];
-      # `colima start` writes this file; it makes `ssh colima` work.
-      programs.ssh.includes = [ "~/.colima/ssh_config" ];
-    };
+    home-manager.users.ety =
+      { lib, pkgs, ... }:
+      let
+        # Nightly mirror of ~ to the NAS. The `i14-nas` remote and its
+        # credentials stay in the unmanaged ~/.config/rclone/rclone.conf.
+        backup = pkgs.writeShellApplication {
+          name = "backup-helios";
+          runtimeInputs = [ pkgs.rclone ];
+          text = ''
+            log="$HOME/.local/state/backup/rclone.log"
+            mkdir -p "$(dirname "$log")"
+            rclone sync "$HOME" i14-nas:home/backup/helios \
+              --filter-from ${pkgs.writeText "backup-helios-filters" ''
+                - .DS_Store
+                - /.local/state/backup/**
+                + /Library/LaunchAgents/**
+                - /Library/**
+                - /Documents/games/**
+                - /Documents/projects/**
+                + /.ssh/**
+                + /.local/**
+                - .*
+              ''} \
+              --modify-window 1s \
+              --transfers 4 \
+              --checkers 8 \
+              --links \
+              --metadata \
+              --fast-list \
+              --log-file "$log" \
+              --log-level INFO
+          '';
+        };
+      in
+      {
+        imports = [ homeManager.ety ];
+        # `colima start` writes this file; it makes `ssh colima` work.
+        programs.ssh.includes = [ "~/.colima/ssh_config" ];
+        home.packages = [ backup ];
+        launchd.agents.backup = {
+          enable = true;
+          config = {
+            ProgramArguments = [
+              "/usr/bin/caffeinate"
+              "-is"
+              (lib.getExe backup)
+            ];
+            StartCalendarInterval = [
+              {
+                Hour = 2;
+                Minute = 0;
+              }
+            ];
+          };
+        };
+      };
   };
 
   flake.modules.nixos.ety =
@@ -72,7 +123,6 @@ in
         htop
         pixi
         rclone
-        rsync
       ];
     };
 }
