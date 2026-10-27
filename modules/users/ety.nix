@@ -65,7 +65,6 @@ in
         unstable.opencode
         nodejs
         htop
-        gh
         pixi
         rclone
         rsync
