@@ -12,17 +12,42 @@ let
   name = "backup-home";
   remote = "i14-nas:home/backup";
 
+  # Back up what you made; skip what can be downloaded or rebuilt. First match
+  # wins. Paths starting with / are relative to ~; the others match anywhere.
   filters = pkgs.writeText "${name}-filters" ''
+    # macOS clutter
     - .DS_Store
-    + /Library/LaunchAgents/**
-    - /Library/**
+    - ._*
+    - .localized
+    # Rebuildable environments and caches
+    - node_modules/**
+    - .venv/**
+    - venv/**
+    - __pycache__/**
+    - .pytest_cache/**
+    - .mypy_cache/**
+    - .ruff_cache/**
+    - .ipynb_checkpoints/**
+    - .direnv/**
+    # Tokens: regenerate rather than copy
+    - .env
+    - .envrc
+    # Downloadable again
+    - /Downloads/**
     - /Documents/games/**
+    - /Documents/SWITCH/**
+    - /nltk_data/**
+    # On GitHub
     - /Documents/projects/**
+    - /nix-config/**
+    # Apps, their settings and tools: rebuilt by Nix and Homebrew
+    - /Library/**
+    - /Applications/**
+    # Hidden folders in ~, except SSH keys
     - /.ssh/agent/**
     + /.ssh/**
-    + /.local/**
     - /.*/**
-    - .*
+    - /.*
   '';
 
   backup-home = pkgs.writeShellApplication {
@@ -74,6 +99,7 @@ let
         note "NAS unreachable, skipped"
       elif rclone sync "$HOME" ${remote}/${osConfig.networking.hostName} \
         --filter-from ${filters} \
+        --delete-excluded \
         --modify-window 1s \
         --transfers 4 \
         --checkers 8 \
