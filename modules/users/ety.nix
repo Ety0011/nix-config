@@ -31,99 +31,14 @@ in
       "docker"
       "docker-compose"
     ];
-    home-manager.users.ety =
-      { lib, pkgs, ... }:
-      let
-        # Daily mirror of ~ to the NAS, which keeps its own versions. The
-        # `i14-nas` remote and its credentials stay in the unmanaged
-        # ~/.config/rclone/rclone.conf.
-        backup = pkgs.writeShellApplication {
-          name = "backup-helios";
-          runtimeInputs = [
-            pkgs.coreutils
-            pkgs.rclone
-          ];
-          text = ''
-            # macOS locations, both outside the backup: the log shows up in
-            # Console.app, and a restored Mac starts without the old state.
-            # NOTICE logs errors plus one summary line per run.
-            log="$HOME/Library/Logs/backup-helios.log"
-            state="$HOME/Library/Application Support/backup-helios"
-            mkdir -p "$state"
-            now=$(date +%s)
-            last=$(cat "$state/last-success" 2>/dev/null || echo 0)
-
-            # launchd tries hourly; one success a day is enough.
-            if [ "''${1:-}" = --scheduled ] && ((now - last < 86400)); then
-              exit 0
-            fi
-
-            if rclone sync "$HOME" i14-nas:home/backup/helios \
-              --filter-from ${pkgs.writeText "backup-helios-filters" ''
-                - .DS_Store
-                + /Library/LaunchAgents/**
-                - /Library/**
-                - /Documents/games/**
-                - /Documents/projects/**
-                - /.ssh/agent/**
-                + /.ssh/**
-                + /.local/**
-                - /.*/**
-                - .*
-              ''} \
-              --contimeout 15s \
-              --modify-window 1s \
-              --transfers 4 \
-              --checkers 8 \
-              --links \
-              --metadata \
-              --fast-list \
-              --log-file "$log" \
-              --log-level NOTICE \
-              --stats 24h \
-              --stats-one-line \
-              --stats-log-level NOTICE; then
-              echo "$now" >"$state/last-success"
-              exit 0
-            fi
-
-            # Failures are normal away from home. Warn only when the last
-            # success is over 3 days old, at most once a day.
-            warned=$(cat "$state/last-warning" 2>/dev/null || echo 0)
-            if ((now - last > 3 * 86400 && now - warned > 86400)); then
-              if ((last == 0)); then
-                when="No successful backup yet."
-              else
-                when="Last success $(((now - last) / 86400)) days ago."
-              fi
-              /usr/bin/osascript -e "display notification \"$when See ~/Library/Logs/backup-helios.log\" with title \"Backup to NAS is stale\""
-              echo "$now" >"$state/last-warning"
-            fi
-            exit 1
-          '';
-        };
-      in
-      {
-        imports = [ homeManager.ety ];
-        # `colima start` writes this file; it makes `ssh colima` work.
-        programs.ssh.includes = [ "~/.colima/ssh_config" ];
-        home.packages = [ backup ];
-        launchd.agents.backup = {
-          enable = true;
-          config = {
-            ProgramArguments = [
-              "/usr/bin/caffeinate"
-              "-is"
-              (lib.getExe backup)
-              "--scheduled"
-            ];
-            # Hourly, plus at login; a run missed during sleep fires on wake.
-            StartInterval = 3600;
-            RunAtLoad = true;
-            ProcessType = "Background";
-          };
-        };
-      };
+    home-manager.users.ety = {
+      imports = [
+        homeManager.ety
+        ./_backup-home.nix
+      ];
+      # `colima start` writes this file; it makes `ssh colima` work.
+      programs.ssh.includes = [ "~/.colima/ssh_config" ];
+    };
   };
 
   flake.modules.nixos.ety =
