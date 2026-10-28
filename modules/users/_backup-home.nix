@@ -40,12 +40,26 @@ let
     # On GitHub
     - /Documents/projects/**
     - /nix-config/**
-    # Apps, their settings and tools: rebuilt by Nix and Homebrew
+    # App data: apps come back from Nix and Homebrew; their data lives on
+    # servers (Firefox and VS Code sync, CardDAV/CalDAV/Exchange, IMAP).
+    # Game saves exist nowhere else.
+    + /Library/Application Support/minecraft/saves/**
+    + /Library/Application Support/Ryujinx/bis/user/save/**
+    + /Library/Application Support/Ryujinx/bis/user/saveMeta/**
+    + /Library/Application Support/Ryujinx/system/**
+    + /Library/Application Support/Cemu/mlc01/usr/save/**
+    + /Library/Application Support/Dolphin/GC/**
+    + /Library/Application Support/Dolphin/Wii/**
+    + /Library/Application Support/Dolphin/StateSaves/**
     - /Library/**
     - /Applications/**
     # Hidden entries in ~. SSH keys are per device: after a loss make a new
-    # one; known_hosts lists where to register it.
+    # one; known_hosts lists where to register it. Claude Code: settings,
+    # hooks and memory, not transcripts or plugin caches.
     + /.ssh/known_hosts
+    + /.claude/settings.json
+    + /.claude/hooks/**
+    + /.claude/projects/*/memory/**
     - /.*/**
     - /.*
   '';
@@ -101,8 +115,6 @@ let
         --filter-from ${filters} \
         --delete-excluded \
         --modify-window 1s \
-        --transfers 4 \
-        --checkers 8 \
         --links \
         --log-file "$log" \
         --log-level NOTICE \
