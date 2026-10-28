@@ -43,9 +43,9 @@ let
     # Apps, their settings and tools: rebuilt by Nix and Homebrew
     - /Library/**
     - /Applications/**
-    # Hidden folders in ~, except SSH keys
-    - /.ssh/agent/**
-    + /.ssh/**
+    # Hidden entries in ~. SSH keys are per device: after a loss make a new
+    # one; known_hosts lists where to register it.
+    + /.ssh/known_hosts
     - /.*/**
     - /.*
   '';
