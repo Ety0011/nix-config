@@ -51,6 +51,7 @@ in
                 - /Library/**
                 - /Documents/games/**
                 - /Documents/projects/**
+                - /.ssh/agent/**
                 + /.ssh/**
                 + /.local/**
                 - /.*/**
