@@ -44,10 +44,11 @@ in
             pkgs.rclone
           ];
           text = ''
-            # ~/Library/Logs shows up in Console.app and is outside the backup.
+            # macOS locations, both outside the backup: the log shows up in
+            # Console.app, and a restored Mac starts without the old state.
             # NOTICE logs errors plus one summary line per run.
             log="$HOME/Library/Logs/backup-helios.log"
-            state="$HOME/.local/state/backup-helios"
+            state="$HOME/Library/Application Support/backup-helios"
             mkdir -p "$state"
             now=$(date +%s)
             last=$(cat "$state/last-success" 2>/dev/null || echo 0)
