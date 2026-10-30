@@ -120,7 +120,7 @@ one, set it to the opposite value once.
 - **Global ignores: removed (2026-10-30).** This once said to keep `.envrc` globally ignored
   because `.envrc` files held tokens. It hid `.envrc` from `nix flake init` templates and from
   collaborators' view of a repo, so each repo's `.gitignore` now owns the list. The pattern is a
-  committed `.envrc` (`use flake` + `dotenv_if_exists`) plus an ignored `.env` (dev-env.md §15).
+  committed `.envrc` (`use flake` + `dotenv_if_exists`) plus an ignored `.env` (dev-env.md §12).
 - **Change:** add `programs.git.signing.format = null;`. The legacy default writes
   `gpg.format = openpgp` and a gnupg path [hm-git#L450-482], which keeps gnupg-2.4.9 (129.4 MiB)
   in the closure [local]. Use `null` until you adopt SSH signing (§4.3).
