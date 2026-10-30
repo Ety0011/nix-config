@@ -9,9 +9,6 @@ in
     # GUI apps stay in Homebrew: they self-update, and macOS privacy grants
     # (camera, mic, screen) survive updates. See docs/adr/0003.
     # Apps worth reinstalling on a new Mac; games and one-offs stay manual.
-    # Pear Desktop has no official cask; its own tap's cask skips the
-    # checksum and clears quarantine (the app is unsigned).
-    homebrew.taps = [ "pear-devs/pear" ];
     homebrew.casks = [
       "capslocknodelay"
       "discord"
@@ -23,7 +20,6 @@ in
       "obs"
       "obsidian"
       "openmtp"
-      "pear-devs/pear/pear-desktop"
       "tailscale-app"
       "visual-studio-code"
       "vorssaint"
@@ -43,14 +39,19 @@ in
       nas-user.owner = "ety";
       nas-pass.owner = "ety";
     };
-    home-manager.users.ety = {
-      imports = [
-        homeManager.ety
-        ./_backup-home.nix
-      ];
-      # `colima start` writes this file; it makes `ssh colima` work.
-      programs.ssh.includes = [ "~/.colima/ssh_config" ];
-    };
+    home-manager.users.ety =
+      { pkgs, ... }:
+      {
+        imports = [
+          homeManager.ety
+          ./_backup-home.nix
+        ];
+        # `colima start` writes this file; it makes `ssh colima` work.
+        programs.ssh.includes = [ "~/.colima/ssh_config" ];
+        # Exception to docs/adr/0003: no official cask, and the pear-devs tap's
+        # cask skips the checksum and clears quarantine. Needs no privacy grants.
+        home.packages = [ pkgs.pear-desktop ];
+      };
   };
 
   flake.modules.nixos.ety =
