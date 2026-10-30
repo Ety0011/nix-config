@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # Same Python build as the dev shell; never the runner's system Python.
+      UV_MANAGED_PYTHON: "1"
+    steps:
+      - uses: actions/checkout@v7.0.1
+      # Reads .python-version and uv.lock, the pins the dev shell uses too.
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv sync --locked
+      - run: uv run ruff format --check
+      - run: uv run ruff check
+      - run: uv run basedpyright
+      - run: uv run pytest
