@@ -1,5 +1,6 @@
 # Daily mirror of ~ to the NAS, which keeps its own versions. The `i14-nas`
-# remote and its credentials stay in the unmanaged ~/.config/rclone/rclone.conf.
+# remote is declared here; its login comes from sops (users/ety.nix) and
+# Home Manager writes it, obscured, into ~/.config/rclone/rclone.conf.
 # Home Manager module, imported by the darwin side of users/ety.nix.
 {
   config,
@@ -148,6 +149,18 @@ let
 in
 {
   home.packages = [ backup-home ];
+
+  programs.rclone = {
+    enable = true;
+    remotes.i14-nas = {
+      config.type = "smb";
+      secrets = {
+        host = osConfig.sops.secrets.nas-host.path;
+        user = osConfig.sops.secrets.nas-user.path;
+        pass = osConfig.sops.secrets.nas-pass.path;
+      };
+    };
+  };
 
   launchd.agents.${name} = {
     enable = true;

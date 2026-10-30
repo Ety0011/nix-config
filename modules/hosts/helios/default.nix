@@ -6,6 +6,7 @@
       ety
     ];
     nixpkgs.hostPlatform = "aarch64-darwin";
+    sops.defaultSopsFile = ../../../secrets/helios.yaml;
     # Live install: never change these.
     system.stateVersion = 6;
     home-manager.users.ety.home.stateVersion = "24.11";

@@ -31,6 +31,14 @@ in
       "docker"
       "docker-compose"
     ];
+    # The NAS login for backup-home. Per-device key, kept out of the backup;
+    # recovery is in docs/adr/0005.
+    sops.age.keyFile = "/Users/ety/Library/Application Support/sops/age/keys.txt";
+    sops.secrets = {
+      nas-host.owner = "ety";
+      nas-user.owner = "ety";
+      nas-pass.owner = "ety";
+    };
     home-manager.users.ety = {
       imports = [
         homeManager.ety
