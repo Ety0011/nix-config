@@ -113,13 +113,14 @@ one, set it to the opposite value once.
 ### 3.3 `git.nix` (HM, `base`) and the git identity in `users/ety.nix`
 
 - **Keep:** `delta` (its `enableGitIntegration` defaults to `false`, so the line is needed
-  [hm-delta#L57]), `init.defaultBranch`, `push.autoSetupRemote`, and the ignores.
+  [hm-delta#L57]), `init.defaultBranch` and `push.autoSetupRemote`.
 - **Keep `pull.rebase = false`.** It is git's default behaviour (merge), stated explicitly so git
   stops printing the "how to reconcile" hint. You pull once in the whole history and merge 45
   times, so a merge workflow fits.
-- **Keep `.envrc` in the global ignores.** **Assessment:** normally you commit `.envrc`, but your
-  `.envrc` files hold tokens [local], so the global ignore protects you. The clean pattern for
-  later is a committed `.envrc` (`use flake` + `dotenv_if_exists`) plus an ignored `.env`.
+- **Global ignores: removed (2026-10-30).** This once said to keep `.envrc` globally ignored
+  because `.envrc` files held tokens. It hid `.envrc` from `nix flake init` templates and from
+  collaborators' view of a repo, so each repo's `.gitignore` now owns the list. The pattern is a
+  committed `.envrc` (`use flake` + `dotenv_if_exists`) plus an ignored `.env` (dev-env.md §15).
 - **Change:** add `programs.git.signing.format = null;`. The legacy default writes
   `gpg.format = openpgp` and a gnupg path [hm-git#L450-482], which keeps gnupg-2.4.9 (129.4 MiB)
   in the closure [local]. Use `null` until you adopt SSH signing (§4.3).
