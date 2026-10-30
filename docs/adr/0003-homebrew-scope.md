@@ -8,4 +8,4 @@ GUI apps such as Teams and OBS need macOS privacy grants (camera, microphone, sc
 
 - **Everything from nixpkgs:** loses privacy grants on each update; several apps unavailable.
 - **`cleanup = "zap"`:** also deletes app preferences and data of removed casks; too destructive for a convenience.
-- **nix-homebrew (Homebrew itself managed by Nix):** no taps in use and brew already installed; revisit for a fresh Mac.
+- **nix-homebrew (Homebrew itself managed by Nix):** one tap (`pear-devs/pear`) and brew already installed; revisit for a fresh Mac.
