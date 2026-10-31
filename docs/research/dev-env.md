@@ -13,6 +13,7 @@ This file is the language-independent half. Each language has its own file with 
 choice and a worked template:
 
 - **Python:** [dev-env-python.md](dev-env-python.md), template `templates/python/`.
+- **C and C++:** [dev-env-cpp.md](dev-env-cpp.md), template `templates/cpp/`.
 - Add `dev-env-<lang>.md` for each new language, built on this pattern, and list it here.
 
 ---

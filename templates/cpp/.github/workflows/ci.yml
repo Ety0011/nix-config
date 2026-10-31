@@ -1,0 +1,18 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: cachix/install-nix-action@v31.11.3
+      # The shell holds the compiler, so CI uses the same one as you do.
+      - run: nix develop -c cmake --workflow --preset ci
+      - run: nix develop -c sh -c "git ls-files '*.c' '*.cpp' '*.h' | xargs clang-format --dry-run --Werror"
+      - run: nix develop -c run-clang-tidy -p build/ci -quiet

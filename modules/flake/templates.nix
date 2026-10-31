@@ -21,4 +21,23 @@
       `.python-version` sets the Python version for uv here and in CI.
     '';
   };
+
+  flake.templates.cpp = {
+    path = ../../templates/cpp;
+    description = "C and C++ project: Nix supplies the compiler, CMake, clangd and the libraries";
+    welcomeText = ''
+      # C and C++ project
+
+      Next steps:
+
+      ```sh
+      direnv allow                     # loads clang, CMake, Ninja, clangd from flake.nix
+      cmake --workflow --preset debug  # configure, build, test
+      ./build/debug/app
+      ```
+
+      Rename `app` in `CMakeLists.txt`. After `nix flake update`, run
+      `cmake --fresh --preset debug`: build dirs cache the old store paths.
+    '';
+  };
 }
