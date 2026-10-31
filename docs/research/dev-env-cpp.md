@@ -1110,16 +1110,10 @@ Template-mechanics runs (init, the `git init` order): [dev-env.md §9](dev-env.m
 
 ## 12. Side findings
 
-Problems in the pattern note, left unchanged as instructed. They need your decision.
-
-- **[dev-env.md §11](dev-env.md) would produce a broken shell.** Its `c` bullet says "`mkShell` …,
-  clang-tools, cmake and ninja, as in the deleted shell". That shell has hidden `-O2` on Debug,
-  UBSan missing signed overflow, ASan hanging on helios, broken lldb, and most likely gcc as `CC` on
-  Linux (§4.3, §4.4, §5.2, §6.4). It also names the template `c` and `templates/c/`; this design is
-  `cpp`, as you asked.
-- **[dev-env.md §10](dev-env.md)'s features.md row** says "`c` waits for its trigger", same naming.
-- **[dev-env.md §5](dev-env.md)'s "Update cadence"** ("low risk") is true of Python only. Here the
-  lock moves the compiler (§4.1, §8).
+- **The deleted shell's recipe was not enough.** Plain `mkShell` with clang-tools, cmake and ninja
+  has hidden `-O2` on Debug, UBSan missing signed overflow, ASan hanging on helios, broken lldb, and
+  most likely gcc as `CC` on Linux (§4.3, §4.4, §5.2, §6.4). [dev-env.md §11](dev-env.md) now says
+  so.
 - **helios' Command Line Tools are stale for sanitizers.** Apple clang `clang-1700.6.3.2` hangs on
   ASan. **Fact:** upstream reports say Xcode 26.4 and 26.5 fix it [llvm-200447]. A Command Line Tools
   update should fix `/usr/bin/clang`. Not tried.

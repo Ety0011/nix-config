@@ -181,8 +181,10 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
 - **`mkShellNoCC`** when the language manager brings its own toolchain (Python: uv). Python comes from uv, so the shell needs no compiler. An sdist C extension
   (markupsafe built with `--no-binary-package`) compiled fine with Xcode's `/usr/bin/cc`.
   `sysconfig` `CC` is `cc` [local]. On typhon there is no system compiler; see [dev-env-python.md §4.4](dev-env-python.md).
-- **Update cadence:** `nix flake update` when you want a newer uv, or monthly. The lock only moves
-  `uv` and `nixfmt-tree`, so this is low risk.
+- **`mkShell`** when Nix supplies the compiler (C and C++; see [dev-env-cpp.md §4](dev-env-cpp.md)).
+- **Update cadence:** `nix flake update` when you want a newer uv, or monthly. In a Python project
+  the lock only moves `uv` and `nixfmt-tree`, so this is low risk. In a C or C++ project it moves
+  the compiler and every library; see [dev-env-cpp.md §8](dev-env-cpp.md).
 
 ---
 
@@ -271,13 +273,13 @@ Python-specific runs: [dev-env-python.md §10](dev-env-python.md).
 
 | Where                          | Earlier verdict                                                                                               | Now                                                                                                                                                                                                                        |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| best-of-nix L25-26             | Keep nix-direnv and plain `mkShell` devShells                                                                 | **Confirmed**, refined: plain `mkShellNoCC` in each project's flake, not devShells in nix-config                                                                                                                           |
+| best-of-nix L25-26             | Keep nix-direnv and plain `mkShell` devShells                                                                 | **Confirmed**, refined: plain `mkShellNoCC` (`mkShell` for C and C++) in each project's flake, not devShells in nix-config                                                                                                 |
 | best-of-nix L264-266           | devenv when a project needs services; per project; `mkShell` + nix-direnv stays default                       | **Confirmed** (devenv v2.4.0; it also handles NixOS native libs, §4.4)                                                                                                                                                     |
 | best-of-nix L297-299           | Flake templates; dev-templates "a good source"                                                                | Templates **confirmed**; dev-templates as the Python source **overturned** (pip, no lock, §4.5)                                                                                                                            |
 | best-of-nix L339               | devshell, devbox, flox skipped                                                                                | **Confirmed** with reasons (§4.5)                                                                                                                                                                                          |
 | features.md L40, L364-366      | uv "when needed", via HM `programs.uv`, "manages its own Pythons, so no store-path venvs that break after gc" | **Partly overturned:** uv comes from each project's flake, not HM; no global uv needed. The gc concern is moot in both variants: nix-direnv roots the shell and uv rebuilds the venv when the interpreter changes (tested) |
 | features.md L106 (§3.2)        | Keep `nix-direnv`; it roots devShells against gc                                                              | **Confirmed** from source [nd-direnvrc#L208-212] [nd-direnvrc#L357-377]                                                                                                                                                    |
-| features.md L200, L274 (§3.15) | Remove `c`/`python` devShells or turn them into templates                                                     | **Confirmed**, and done in `9f2a720`. `python` is now a template; `c` waits for its trigger                                                                                                                                |
+| features.md L200, L274 (§3.15) | Remove `c`/`python` devShells or turn them into templates                                                     | **Confirmed**, and done in `9f2a720`. `python` and `cpp` are now templates                                                                                                                                                 |
 | features.md L362-364           | Trigger: next C or Python project; `nix flake init -t ~/nix-config#python`                                    | **Confirmed**, with one precondition: `git init` first (`git add -f` no longer needed)                                                                                                                                     |
 | features.md L497               | "refactor: drop devShells (or templates)"                                                                     | Done (`9f2a720`)                                                                                                                                                                                                           |
 
@@ -288,9 +290,9 @@ Python-specific runs: [dev-env-python.md §10](dev-env-python.md).
 - **devenv:** the project needs services or processes (PostgreSQL, Redis, workers), or several
   languages with managed native libraries on NixOS.
 - **Nix in CI:** the dev shell carries non-Python tools the tests run.
-- **`c` template:** add `flake.templates.c` to the same `templates.nix` and a `templates/c/` when
-  the next C/C++ project starts. That is `mkShell` (it needs a compiler), clang-tools, cmake and
-  ninja, as in the deleted shell. Do not add it before then.
+- **C and C++:** one `cpp` template covers both languages (`templates/cpp/`). Plain `mkShell`, as in
+  the deleted shell, is not enough: it needs a pinned LLVM and `hardeningDisable`. See
+  [dev-env-cpp.md](dev-env-cpp.md).
 - **ADR: not warranted.** The bar is all three of: hard to reverse, surprising without context,
   and a real trade-off. This fails the first: each project owns its flake and can switch
   variants, or drop Nix, alone. The comment in `templates.nix` and this document cover the "why
