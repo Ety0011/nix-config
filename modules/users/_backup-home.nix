@@ -11,7 +11,8 @@
 }:
 let
   name = "backup-home";
-  remote = "i14-nas:home/backup";
+  share = "i14-nas:home";
+  remote = "${share}/backup";
 
   # Back up what you made; skip what can be downloaded or rebuilt. First match
   # wins. Paths starting with / are relative to ~; the others match anywhere.
@@ -32,6 +33,7 @@ let
     - .direnv/**
     # Tokens: regenerate rather than copy
     - .env
+    - .env.*
     - .envrc
     # Downloadable again
     - /Downloads/**
@@ -109,7 +111,8 @@ let
       if [ -t 1 ]; then progress=(--progress); fi
 
       # Away from home the NAS is unreachable: log one line, not every retry.
-      if ! rclone lsf ${remote} --max-depth 1 --dirs-only \
+      # Probe the share, not ${remote}: sync creates that on the first run.
+      if ! rclone lsf ${share} --max-depth 1 --dirs-only \
         --contimeout 10s --low-level-retries 1 >/dev/null 2>&1; then
         note "NAS unreachable, skipped"
       elif rclone sync "$HOME" ${remote}/${osConfig.networking.hostName} \
