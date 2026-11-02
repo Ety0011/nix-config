@@ -825,6 +825,8 @@ Checks: >
   -readability-identifier-length
 WarningsAsErrors: "*"
 HeaderFilterRegex: "(include|src)/.*"
+# FetchContent sources also have include/ and src/; their warnings are not ours.
+ExcludeHeaderFilterRegex: "/_deps/"
 ```
 
 `templates/cpp/include/add.h`:
@@ -943,7 +945,7 @@ jobs:
       - uses: cachix/install-nix-action@v31.11.3
       # The shell holds the compiler, so CI uses the same one as you do.
       - run: nix develop -c cmake --workflow --preset ci
-      - run: nix develop -c sh -c "git ls-files '*.c' '*.cpp' '*.h' | xargs clang-format --dry-run --Werror"
+      - run: nix develop -c sh -c "git ls-files -z '*.c' '*.h' '*.cpp' '*.hpp' '*.cc' '*.cxx' '*.hh' | xargs -0 -r clang-format --dry-run --Werror"
       - run: nix develop -c run-clang-tidy -p build/ci -quiet
 ```
 
@@ -985,7 +987,7 @@ cmake --build --preset debug                # rebuild
 cmake --workflow --preset ci                # what CI runs: ASan, UBSan, warnings as errors
 cmake --preset tsan && cmake --build --preset tsan && ctest --preset tsan
 lldb build/debug/app
-git ls-files '*.c' '*.cpp' '*.h' | xargs clang-format -i
+git ls-files -z '*.c' '*.h' '*.cpp' '*.hpp' '*.cc' '*.cxx' '*.hh' | xargs -0 -r clang-format -i
 run-clang-tidy -p build/debug -quiet
 ```
 

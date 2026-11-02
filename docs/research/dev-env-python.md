@@ -397,7 +397,8 @@ jobs:
       - run: uv run ruff format --check
       - run: uv run ruff check
       - run: uv run basedpyright
-      - run: uv run pytest
+      # Exit 5 is "no tests collected": a new project starts with none.
+      - run: uv run pytest || [ $? -eq 5 ]
 ```
 
 `pyproject.toml` comes from `uv init`, not the template, because init cannot substitute the

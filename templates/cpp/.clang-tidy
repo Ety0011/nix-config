@@ -10,3 +10,5 @@ Checks: >
   -readability-identifier-length
 WarningsAsErrors: "*"
 HeaderFilterRegex: "(include|src)/.*"
+# FetchContent sources also have include/ and src/; their warnings are not ours.
+ExcludeHeaderFilterRegex: "/_deps/"
