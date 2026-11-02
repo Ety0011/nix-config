@@ -104,13 +104,15 @@ deliver uv. Nothing in C or C++ fills that role:
 - **The branch, reassessed.** The pattern picks `nixpkgs-unstable` partly because "nothing else in
   the shell can break" ([dev-env.md §5](dev-env.md)), which is false here.
   - **Fact:** nix-config's `nixpkgs-26.05-darwin` input has the same `llvmPackages_22` 22.1.8 as
-    unstable, with older CMake (4.1.6 vs 4.4.4), fmt (12.1.0 vs 12.2.0) and catch2 (3.14.0 vs
+    unstable, with older CMake (4.1.6 vs 4.4.4), fmt (12.1.0 vs 12.2.0) and `catch2_3` (3.14.0 vs
     3.16.0) [lock-cpp].
   - **Assessment:** keep `nixpkgs-unstable`. The LLVM major is pinned by the attribute name, so an
-    update moves the compiler within 22.x only. CMake and libraries do move, and §8's
-    `cmake --fresh` handles that the same way on either branch. A release branch gives older CMake
-    and libraries and needs its URL edited every six months (26.05 ends 2026-12-31). Use a release
-    branch for a project that wants library updates limited to backports.
+    update moves the compiler within 22.x only, until unstable drops `llvmPackages_22`: then
+    evaluation fails with a missing attribute and the pin must move up (§4.4). CMake and libraries
+    do move, and §8's `cmake --fresh` handles that the same way on either branch. A release branch
+    gives older CMake and libraries and needs its URL edited every six months (26.05 ends
+    2026-12-31). Use a release branch for a project that wants library updates limited to
+    backports.
 - **What changes:**
   - `mkShell`, not `mkShellNoCC` ([dev-env.md §5](dev-env.md)).
   - `flake.lock` is the real lockfile, so `nix flake update` is no longer low risk: it moves the
@@ -1169,11 +1171,12 @@ Metadata and local: [gh-meta] and [local] as in [dev-env.md §14](dev-env.md).
 - [lock-cpp] `nix eval` at nixpkgs `885ba4d038f10c3d17d7a92e8c3cc185b99c9158` (2026-10-30), both
   systems: clang-tools 21.1.8 (default), `llvmPackages_22` 22.1.8, `llvmPackages_23` 23.1.3,
   cmake 4.4.4, ninja 1.13.2, meson 1.12.1, xmake 3.1.2, conan 2.32.0, vcpkg 2026.06.24, gcc 16.2.0,
-  gdb 17.2, valgrind 3.27.1, catch2 3.16.0, fmt 12.2.0, bear 4.2.3. `darwinSdkVersion` 14.4,
-  `darwinMinVersion` 14.0, `apple-sdk_26` 26.5. nix-config's 26.05 input @ `d592aacecd35`:
-  clang-tools 21.1.8, lldb 21.1.8, cmake 4.1.6; re-evaluated 2026-11-02 for §4.1:
-  `llvmPackages_22` 22.1.8, fmt 12.1.0, `catch2_3` 3.14.0. Cache presence by `curl` of `<hash>.narinfo`
-  on cache.nixos.org; closure sizes by `nix path-info --store https://cache.nixos.org -r --json`.
+  gdb 17.2, valgrind 3.27.1, `catch2_3` 3.16.0 (`catch2` is Catch2 v2, 2.13.10), fmt 12.2.0,
+  bear 4.2.3. `darwinSdkVersion` 14.4, `darwinMinVersion` 14.0, `apple-sdk_26` 26.5. nix-config's
+  26.05 input @ `d592aacecd35`: clang-tools 21.1.8, lldb 21.1.8, cmake 4.1.6; re-evaluated
+  2026-11-02 for §4.1: `llvmPackages_22` 22.1.8, fmt 12.1.0, `catch2_3` 3.14.0. Cache presence by
+  `curl` of `<hash>.narinfo` on cache.nixos.org; closure sizes by
+  `nix path-info --store https://cache.nixos.org -r --json`.
 - [local] helios, 2026-10-30 and 2026-10-31: `~/Documents` project layout; `~/.zsh_history` line
   counts; `~/.vscode/extensions`; this repo @ `578e432`; every test in §10.
 

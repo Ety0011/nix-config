@@ -98,7 +98,8 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
   the flake in 'path'") [nix-flake.cc#L556-558]. The template's own `flake.nix` is never evaluated
   by nix-config's check, so each language doc tests its template separately.
 - **Fact:** `nix flake new -t … <dir>` does the same into a new directory without `git init`
-  [local]. **Assessment:** use `git init && nix flake init`; [dev-env-python.md §9.3](dev-env-python.md) shows why.
+  [local]. **Assessment:** use `git init && nix flake init`;
+  [dev-env-python.md §9.3](dev-env-python.md) shows why.
 
 ### 4.2 Where it goes in this repo
 
@@ -112,8 +113,8 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
   - `modules/flake/templates.nix`: one module, all templates. It is a flake-level output, like
     `formatter.nix`, not a Feature, so Roles are not involved. "Import each module along exactly
     one path" holds trivially.
-  - `templates/<lang>/…` (now `python` and `cpp`): data files at the repo root. They are outside `./modules`, so they are
-    never imported.
+  - `templates/<lang>/…` (now `python` and `cpp`): data files at the repo root. They are outside
+    `./modules`, so they are never imported.
   - treefmt still formats them. nix-config's nixfmt and the project's `nixfmt-tree` produced
     identical output for `flake.nix`, and the JSON/YAML files came through unchanged [local].
 - **Fact:** a path flake ref to a git repo sees tracked files only. While the global ignore
@@ -182,16 +183,18 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
   give different answers per host. A `nix-config` input would tie every project to this repo.
 - **Systems:** `aarch64-darwin` and `x86_64-linux`, your two Hosts and `ubuntu-latest`. Add
   `aarch64-linux` only if a project needs it.
-- **`mkShellNoCC`** when the language manager brings its own toolchain (Python: uv). Python comes from uv, so the shell needs no compiler. An sdist C extension
-  (markupsafe built with `--no-binary-package`) compiled fine with Xcode's `/usr/bin/cc`.
-  `sysconfig` `CC` is `cc` [local]. On typhon there is no system compiler; see [dev-env-python.md §4.4](dev-env-python.md).
+- **`mkShellNoCC`** when the language manager brings its own toolchain (Python: uv). Python comes
+  from uv, so the shell needs no compiler. An sdist C extension (markupsafe built with
+  `--no-binary-package`) compiled fine with Xcode's `/usr/bin/cc`. `sysconfig` `CC` is `cc`
+  [local]. On typhon there is no system compiler; see [dev-env-python.md §4.4](dev-env-python.md).
 - **`mkShell`** when Nix supplies the compiler (C and C++; see [dev-env-cpp.md §4](dev-env-cpp.md)).
 - **Update cadence:** `nix flake update`, per language.
   - Python: when you want a newer uv, or monthly. The lock only moves `uv` and `nixfmt-tree`, so
     this is low risk.
-  - C and C++: it moves the compiler and every library, and every build directory must then be
-    reconfigured with `cmake --fresh --preset <name>`, or the old compiler stays in use until gc
-    removes it ([dev-env-cpp.md §8](dev-env-cpp.md)).
+  - C and C++: when you need a newer CMake or library, not on a timer. It moves every library and
+    the compiler within its LLVM major. Then run `cmake --fresh --preset <name>` for every build
+    directory: each one caches the old store paths, and once gc removes them the build fails with
+    "No such file or directory" ([dev-env-cpp.md §8](dev-env-cpp.md)).
 
 ---
 
@@ -245,10 +248,11 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
 
 ## 8. What is pinned where, and how updates flow
 
-| What                                                                                      | Pinned by                           | Update with                                          |
-| ----------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------- |
-| Everything Nix supplies: uv (Python); compiler, CMake, libraries (C and C++); nixfmt-tree | `flake.lock` (nixpkgs-unstable rev) | `nix flake update` (C and C++: then `cmake --fresh`) |
-| CI actions                                                                                | exact tags in `ci.yml`              | edit (or Dependabot `github-actions`)                |
+| What                                                                            | Pinned by                                           | Update with                                          |
+| ------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
+| Everything Nix supplies: uv (Python); CMake, libraries (C and C++); nixfmt-tree | `flake.lock` (nixpkgs-unstable rev)                 | `nix flake update` (C and C++: then `cmake --fresh`) |
+| LLVM (C and C++): compiler, clangd, clang-tidy, lldb                            | `llvmPackages_22` in `flake.nix`, then `flake.lock` | major: edit the attribute; minor: `nix flake update` |
+| CI actions                                                                      | exact tags in `ci.yml`                              | edit (or Dependabot `github-actions`)                |
 
 - Language rows (interpreter, packages, tool config): [dev-env-python.md §8](dev-env-python.md)
   and [dev-env-cpp.md §8](dev-env-cpp.md).
@@ -288,7 +292,7 @@ Python-specific runs: [dev-env-python.md §10](dev-env-python.md).
 | features.md L40, L364-366      | uv "when needed", via HM `programs.uv`, "manages its own Pythons, so no store-path venvs that break after gc" | **Partly overturned:** uv comes from each project's flake, not HM; no global uv needed. The gc concern is moot in both variants: nix-direnv roots the shell and uv rebuilds the venv when the interpreter changes (tested) |
 | features.md L106 (§3.2)        | Keep `nix-direnv`; it roots devShells against gc                                                              | **Confirmed** from source [nd-direnvrc#L208-212] [nd-direnvrc#L357-377]                                                                                                                                                    |
 | features.md L200, L274 (§3.15) | Remove `c`/`python` devShells or turn them into templates                                                     | **Confirmed**, and done: devShells dropped in `9f2a720`; templates added in `d96a70b` (`python`) and `1e0932d` (`cpp`)                                                                                                     |
-| features.md L362-364           | Trigger: next C or Python project; `nix flake init -t ~/nix-config#python`                                    | **Confirmed**, with one precondition: `git init` first (`git add -f` no longer needed)                                                                                                                                     |
+| features.md L362-364           | Trigger: next C or Python project; `nix flake init -t ~/nix-config#python`                                    | **Confirmed**, with one precondition: `git init` first (`git add -f` no longer needed). C and C++ use `#cpp`                                                                                                               |
 | features.md L497               | "refactor: drop devShells (or templates)"                                                                     | Done (`9f2a720`)                                                                                                                                                                                                           |
 
 ---
@@ -301,8 +305,8 @@ Python-specific runs: [dev-env-python.md §10](dev-env-python.md).
 - **C and C++:** one `cpp` template covers both languages (`templates/cpp/`). Plain `mkShell` with
   clang in `packages`, as in the deleted shell, is not enough. It needs three fixes: the stdenv
   swapped for a pinned LLVM's (`mkShell.override { inherit (llvm) stdenv; }`, otherwise `CC` stays
-  stdenv's compiler, gcc on Linux; that case was not run), `hardeningDisable`, and on darwin `LLDB_DEBUGSERVER_PATH` in `shellHook` so lldb
-  works. See [dev-env-cpp.md](dev-env-cpp.md).
+  stdenv's compiler, gcc on Linux; that case was not run), `hardeningDisable`, and on darwin
+  `LLDB_DEBUGSERVER_PATH` in `shellHook` so lldb works. See [dev-env-cpp.md](dev-env-cpp.md).
 - **ADR: not warranted.** The bar is all three of: hard to reverse, surprising without context,
   and a real trade-off. This fails the first: each project owns its flake and can switch
   variants, or drop Nix, alone. The comment in `templates.nix` and this document cover the "why

@@ -1,8 +1,9 @@
-# Project templates: `nix flake init -t ~/nix-config#<name>` (python, cpp). The
-# files live in ../../templates, outside modules/, so import-tree never imports
-# them. All templates go in this one file: `flake.templates` has no merging option, so a
-# second definition elsewhere is an error. Reasons: docs/research/dev-env.md
-# (pattern) and docs/research/dev-env-<lang>.md (each language).
+# Project templates: `nix flake init -t ~/nix-config#<name>`, one attribute below
+# per template. The files live in ../../templates, outside modules/, so
+# import-tree never imports them. All templates go in this one file:
+# `flake.templates` has no merging option, so a second definition elsewhere is
+# an error. Reasons: docs/research/dev-env.md (pattern) and
+# docs/research/dev-env-<lang>.md (each language).
 {
   flake.templates.python = {
     path = ../../templates/python;
