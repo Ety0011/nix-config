@@ -101,6 +101,16 @@ deliver uv. Nothing in C or C++ fills that role:
 - **So the shell carries the compiler, and Nix is the package manager too.** What stays from the
   pattern: the plain per-project flake on `nixpkgs-unstable`, the two systems, nix-direnv, `.env`
   for secrets, and one `templates.nix`.
+- **The branch, reassessed.** The pattern picks `nixpkgs-unstable` partly because "nothing else in
+  the shell can break" ([dev-env.md §5](dev-env.md)), which is false here.
+  - **Fact:** nix-config's `nixpkgs-26.05-darwin` input has the same `llvmPackages_22` 22.1.8 as
+    unstable, with older CMake (4.1.6 vs 4.4.4), fmt (12.1.0 vs 12.2.0) and catch2 (3.14.0 vs
+    3.16.0) [lock-cpp].
+  - **Assessment:** keep `nixpkgs-unstable`. The LLVM major is pinned by the attribute name, so an
+    update moves the compiler within 22.x only. CMake and libraries do move, and §8's
+    `cmake --fresh` handles that the same way on either branch. A release branch gives older CMake
+    and libraries and needs its URL edited every six months (26.05 ends 2026-12-31). Use a release
+    branch for a project that wants library updates limited to backports.
 - **What changes:**
   - `mkShell`, not `mkShellNoCC` ([dev-env.md §5](dev-env.md)).
   - `flake.lock` is the real lockfile, so `nix flake update` is no longer low risk: it moves the
@@ -1112,8 +1122,9 @@ Template-mechanics runs (init, the `git init` order): [dev-env.md §9](dev-env.m
 
 - **The deleted shell's recipe was not enough.** Plain `mkShell` with clang-tools, cmake and ninja
   has hidden `-O2` on Debug, UBSan missing signed overflow, ASan hanging on helios, broken lldb, and
-  most likely gcc as `CC` on Linux (§4.3, §4.4, §5.2, §6.4). [dev-env.md §11](dev-env.md) now says
-  so.
+  most likely gcc as `CC` on Linux (§4.3, §4.4, §5.2, §6.4). The template's fixes are the LLVM
+  stdenv override, `hardeningDisable` and the darwin `LLDB_DEBUGSERVER_PATH` shellHook (§9.1);
+  [dev-env.md §11](dev-env.md) now lists all three.
 - **helios' Command Line Tools are stale for sanitizers.** Apple clang `clang-1700.6.3.2` hangs on
   ASan. **Fact:** upstream reports say Xcode 26.4 and 26.5 fix it [llvm-200447]. A Command Line Tools
   update should fix `/usr/bin/clang`. Not tried.
@@ -1158,7 +1169,8 @@ Metadata and local: [gh-meta] and [local] as in [dev-env.md §14](dev-env.md).
   cmake 4.4.4, ninja 1.13.2, meson 1.12.1, xmake 3.1.2, conan 2.32.0, vcpkg 2026.06.24, gcc 16.2.0,
   gdb 17.2, valgrind 3.27.1, catch2 3.16.0, fmt 12.2.0, bear 4.2.3. `darwinSdkVersion` 14.4,
   `darwinMinVersion` 14.0, `apple-sdk_26` 26.5. nix-config's 26.05 input @ `d592aacecd35`:
-  clang-tools 21.1.8, lldb 21.1.8, cmake 4.1.6. Cache presence by `curl` of `<hash>.narinfo`
+  clang-tools 21.1.8, lldb 21.1.8, cmake 4.1.6; re-evaluated 2026-11-02 for §4.1:
+  `llvmPackages_22` 22.1.8, fmt 12.1.0, `catch2_3` 3.14.0. Cache presence by `curl` of `<hash>.narinfo`
   on cache.nixos.org; closure sizes by `nix path-info --store https://cache.nixos.org -r --json`.
 - [local] helios, 2026-10-30 and 2026-10-31: `~/Documents` project layout; `~/.zsh_history` line
   counts; `~/.vscode/extensions`; this repo @ `578e432`; every test in §10.
