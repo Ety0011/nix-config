@@ -16,5 +16,6 @@ On darwin, sops-nix keeps decrypted secrets on a RAM disk and installs them all-
 
 - Keys: helios at `~/Library/Application Support/sops/age/keys.txt` (0600), typhon at `/var/lib/sops-nix/key.txt` (root 0600, copied in at install). Host keys are per device and stay out of backup-home, like SSH keys.
 - Recovery: on a new Host, make a new key, swap its recipient into `.sops.yaml`, and run `SOPS_AGE_KEY="<recovery key>" sops updatekeys secrets/*.yaml`. If a key leaks, change the secret values, then `sops updatekeys` and `sops rotate`; old commits stay readable to the leaked key. If both a Host key and the recovery key are lost, every secret must be reset at its source.
+- Secrets are declared by the module that reads them, which the Host imports (helios imports `darwin.backup-home`), not by the User: the encrypted file is per Host, so a User module declaring secrets would break every other Host that imports it. The age key path is per device, so it is set in the Host module.
 - Secret names and recipients are public plaintext in the YAML: use neutral names (`nas-pass`, not the NAS address).
 - Kept out of sops: the gh token (keychain), SSH private keys and their passphrase (per device, Keychain), typhon's LUKS passphrase (typed at boot), typhon's login password (set once with `passwd`), app logins and macOS Wi-Fi.

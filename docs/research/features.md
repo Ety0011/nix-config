@@ -7,6 +7,16 @@ inputs: home-manager `release-26.05` @ `24f219058751`, nix-darwin `nix-darwin-26
 `d592aacecd35` (see §7). Usage evidence comes from helios, read-only [local]. "Fact" statements
 carry a citation; **Assessment** marks my judgement.
 
+**Changed since (2026-11-03):**
+
+- §3.5: `homebrew.enableZshIntegration` was dropped again (`1240799`). Its `brew shellenv` put
+  Homebrew ahead of Nix on PATH, and so did this `systemPath`. Homebrew now comes after the Nix
+  profiles (`lib.mkOrder 1100`), and only `/opt/homebrew/share/zsh/site-functions` is added to
+  `fpath`.
+- §3.11: `programs.zsh.enableGlobalCompInit = false` is set on darwin and NixOS (`1240799`).
+- §3.13, §4.4: the colima, docker and docker-compose brews moved to nixpkgs (`eb02f41`, ADR 0003);
+  no brews are left. `rclone` left `home.packages`: `programs.rclone` installs it (`5933a6d`).
+
 ---
 
 ## 1. TL;DR

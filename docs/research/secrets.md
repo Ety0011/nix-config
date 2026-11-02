@@ -9,6 +9,14 @@ come from `gh api repos/<owner>/<repo>` on 2026-10-28 [gh-meta]. "Fact" statemen
 citation; **Assessment** marks my judgement. This revisits best-of-nix §4.2 (see §10). Familiarity
 was not used as a reason for any pick.
 
+**Changed since (2026-11-03):**
+
+- §9: the NAS secrets and `_backup-home.nix` left `users/ety.nix` (`5933a6d`). The one-off
+  module `darwin.backup-home` (`modules/features/backup-home.nix`) declares them for
+  `system.primaryUser`, and helios imports it. `sops.age.keyFile` moved to the helios Host
+  module, since the key is per device. Reason: a User module declaring secrets broke any other
+  Host whose secrets file lacked them (ADR 0005).
+
 ---
 
 ## 1. TL;DR

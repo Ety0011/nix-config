@@ -32,7 +32,7 @@ Restoring personal data (Time Machine, iCloud) is separate.
    curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh
    ```
 3. Install Homebrew (it also installs the Xcode Command Line Tools, which gives you `git`).
-   Skip its "Next steps"; the config handles `brew shellenv`.
+   Skip its "Next steps"; the config puts Homebrew on PATH, after Nix.
    ```sh
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
@@ -54,10 +54,23 @@ Restoring personal data (Time Machine, iCloud) is separate.
 8. `ssh-keygen -t ed25519 -C ety@helios`, then put `~/.ssh/id_ed25519.pub` in
    `modules/users/ety.nix` (typhon's authorized key), commit and push. If typhon is installed, it no longer
    accepts the old key, so log in at its console and run `nh os switch` there.
-9. Grant by hand when asked (macOS does not allow declaring these):
-   - Accessibility: CapsLockNoDelay, Vorssaint
-   - Screen Recording: OBS, Vorssaint (Discord, Teams, VS Code when they ask)
-   - Approve the Tailscale system extension, then sign in to Tailscale and NordVPN.
+9. Give this Mac its own sops key ([docs/adr/0005](docs/adr/0005-secrets.md)); until then the
+   NAS login for backup-home cannot be decrypted. `age` and `sops` come from the first switch.
+   ```sh
+   mkdir -p ~/Library/Application\ Support/sops/age
+   age-keygen -pq -o ~/Library/Application\ Support/sops/age/keys.txt
+   age-keygen -y ~/Library/Application\ Support/sops/age/keys.txt
+   ```
+   Put the printed recipient in `.sops.yaml` in place of the old helios one (the first entry).
+   Copy the recovery key from Apple Passwords, then:
+   ```sh
+   SOPS_AGE_KEY="$(pbpaste)" sops updatekeys secrets/helios.yaml; pbcopy </dev/null
+   ```
+   Commit, push, `nh darwin switch`; `ls -l /run/secrets/` then lists `nas-*` owned by `ety`.
+10. Grant by hand when asked (macOS does not allow declaring these):
+    - Accessibility: CapsLockNoDelay, Vorssaint
+    - Screen Recording: OBS, Vorssaint (Discord, Teams, VS Code when they ask)
+    - Approve the Tailscale system extension, then sign in to Tailscale and NordVPN.
 
 From then on: edit, `nh darwin switch`.
 

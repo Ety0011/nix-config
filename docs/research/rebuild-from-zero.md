@@ -13,6 +13,14 @@ install script as served by nixos.org today (Nix 2.35.4), Homebrew `install` @ `
 State on helios was inspected read-only [local]. "Fact" statements carry a citation;
 **Assessment** marks my judgement.
 
+**Changed since (2026-11-03):**
+
+- §2.4: the unguarded `brew shellenv` line in `/etc/zshrc` is gone (`1240799`). Still install
+  Homebrew before the first switch, for the casks. The first switch installs 14 casks and no brews
+  (`eb02f41`).
+- The README checklist adds a step this research predates: a new sops key for the Mac
+  (`secrets.md`, ADR 0005).
+
 ---
 
 ## 1. TL;DR

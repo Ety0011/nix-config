@@ -5,6 +5,11 @@ Research date: 2026-10-26. Starting point: the best-of-nix ranked list at commit
 where possible (see §10). "Fact" statements carry a citation; **Assessment** marks my judgement.
 Stars and last-push dates come from `gh api repos/<owner>/<repo>` on 2026-10-26 [gh-meta].
 
+**Changed since (2026-11-03):**
+
+- §8 step 8 is done: Homebrew holds casks only, and `cleanup = "uninstall"` (ADR 0003). The
+  last brews (colima, docker, docker-compose) moved to nixpkgs in `eb02f41`.
+
 ---
 
 ## 1. TL;DR
