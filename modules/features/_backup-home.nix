@@ -107,8 +107,12 @@ let
         mv "$log" "$log.1"
       fi
 
+      # By hand: live progress. rclone redraws it every --stats, so override
+      # the 24h below, and keep those per-tick stats lines out of the log.
       progress=()
-      if [ -t 1 ]; then progress=(--progress); fi
+      if [ -t 1 ]; then
+        progress=(--progress --stats 500ms --stats-log-level INFO)
+      fi
 
       # Away from home the NAS is unreachable: log one line, not every retry.
       # Probe the share, not ${remote}: sync creates that on the first run.
