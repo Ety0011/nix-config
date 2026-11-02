@@ -1,6 +1,6 @@
 # Homebrew holds GUI apps only; cleanup uninstalls the rest
 
-On macOS, GUI apps are Homebrew casks and CLI tools come from nixpkgs; the only brews are the Colima Docker stack. `homebrew.onActivation.cleanup = "uninstall"`, so the declared lists are the truth and anything else is removed on switch.
+On macOS, GUI apps are Homebrew casks and CLI tools come from nixpkgs; there are no brews. The Colima Docker stack is in nixpkgs too: its `docker` carries the compose and buildx plugins, which Homebrew's `docker` cannot find without editing `~/.docker/config.json`, and its `limactl` is signed for Apple's Virtualization framework. `homebrew.onActivation.cleanup = "uninstall"`, so the declared lists are the truth and anything else is removed on switch.
 
 GUI apps such as Teams and OBS need macOS privacy grants (camera, microphone, screen recording) that are tied to the app's path and signature; a Nix-built app changes on every update and loses them. Most of these apps also update themselves, which fights a pinned store path, and some (OBS, CapsLockNoDelay) are not packaged for darwin in nixpkgs. CLI tools gain from Nix: pinned, the same on typhon, and rolled back with the system.
 

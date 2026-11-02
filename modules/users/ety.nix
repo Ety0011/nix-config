@@ -25,21 +25,22 @@ in
       "vorssaint"
       "whatsapp"
     ];
-    # Colima's Docker stack integrates better from Homebrew on macOS.
-    homebrew.brews = [
-      "colima"
-      "docker"
-      "docker-compose"
-    ];
     home-manager.users.ety =
       { pkgs, ... }:
       {
         imports = [ homeManager.ety ];
         # `colima start` writes this file; it makes `ssh colima` work.
         programs.ssh.includes = [ "~/.colima/ssh_config" ];
-        # Exception to docs/adr/0003: no official cask, and the pear-devs tap's
-        # cask skips the checksum and clears quarantine. Needs no privacy grants.
-        home.packages = [ pkgs.pear-desktop ];
+        home.packages = [
+          # Docker engine in a Colima VM (vz: nixpkgs signs limactl with the
+          # virtualization entitlement). docker carries the compose and buildx
+          # plugins. Unstable: the VM was made with lima 2.2, newer than 26.05's.
+          pkgs.unstable.colima
+          pkgs.unstable.docker
+          # Exception to docs/adr/0003: no official cask, and the pear-devs tap's
+          # cask skips the checksum and clears quarantine. Needs no privacy grants.
+          pkgs.pear-desktop
+        ];
       };
   };
 
