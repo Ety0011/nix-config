@@ -1,7 +1,7 @@
 # Daily mirror of ~ to the NAS, which keeps its own versions. The `i14-nas`
-# remote is declared here; its login comes from sops (users/ety.nix) and
+# remote is declared here; its login comes from sops (backup-home.nix) and
 # Home Manager writes it, obscured, into ~/.config/rclone/rclone.conf.
-# Home Manager module, imported by the darwin side of users/ety.nix.
+# Home Manager module, imported by backup-home.nix.
 {
   config,
   lib,

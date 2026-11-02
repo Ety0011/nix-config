@@ -1,6 +1,7 @@
 # sops-nix at system level only: at activation it decrypts secrets/<host>.yaml
 # into /run/secrets (a RAM disk on darwin). Home Manager modules read secret
-# paths through osConfig. Inert until a Host declares sops.secrets.
+# paths through osConfig. Inert until a module the Host imports declares
+# sops.secrets (darwin.backup-home on helios).
 # Keys and recovery: docs/adr/0005.
 { inputs, ... }:
 {

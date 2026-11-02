@@ -31,21 +31,10 @@ in
       "docker"
       "docker-compose"
     ];
-    # The NAS login for backup-home. Per-device key, kept out of the backup;
-    # recovery is in docs/adr/0005.
-    sops.age.keyFile = "/Users/ety/Library/Application Support/sops/age/keys.txt";
-    sops.secrets = {
-      nas-host.owner = "ety";
-      nas-user.owner = "ety";
-      nas-pass.owner = "ety";
-    };
     home-manager.users.ety =
       { pkgs, ... }:
       {
-        imports = [
-          homeManager.ety
-          ./_backup-home.nix
-        ];
+        imports = [ homeManager.ety ];
         # `colima start` writes this file; it makes `ssh colima` work.
         programs.ssh.includes = [ "~/.colima/ssh_config" ];
         # Exception to docs/adr/0003: no official cask, and the pear-devs tap's
@@ -87,7 +76,6 @@ in
         nodejs
         htop
         pixi
-        rclone
       ];
     };
 }
