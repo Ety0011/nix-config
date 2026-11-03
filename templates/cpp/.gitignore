@@ -1,6 +1,19 @@
+# macOS Finder metadata
 .DS_Store
+
+# direnv/nix-direnv cache, and `nix build` links (run from the project root)
 .direnv/
+/result
+/result-*
+
+# Secrets: .envrc loads .env. Commit an .env.example instead.
 .env
-.cache/
-build/
-result
+.env.*
+!.env.example
+
+# CMake preset build trees (build/<preset>/): objects, _deps/,
+# compile_commands.json, and clangd's index (build/debug/.cache/clangd/)
+/build/
+
+# Personal presets; CMake's manual says never to commit this file
+/CMakeUserPresets.json

@@ -399,7 +399,9 @@ as a flake attribute.
 - **Assessment:** make the editor load the shell (§6.5) instead of working around it. No
   `--query-driver` in the template: it only rescues the no-library case.
 - **clangd's index** goes in `.cache/clangd/index/` next to the database's project
-  [clangd-indexing#L66], hence `.cache/` in `.gitignore`.
+  [clangd-indexing#L66]. With `.clangd` pointing at `build/debug`, that is
+  `build/debug/.cache/clangd/`, inside the ignored `/build/`; since LLVM 22 the index also ignores
+  itself ([gitignore.md](gitignore.md) §10).
 - **The first clangd start needs a build directory.** Run `cmake --preset debug` once. Tested: with
   no `build/debug` clangd reported 2 errors, and 0 after the workflow ran [local].
 
@@ -661,15 +663,28 @@ use flake path:./nix
 dotenv_if_exists
 ```
 
-`templates/cpp/.gitignore` (there is no global ignore, so this is the whole list):
+`templates/cpp/.gitignore` (reasons for each line: [gitignore.md](gitignore.md) §10):
 
 ```gitignore
+# macOS Finder metadata
 .DS_Store
+
+# direnv/nix-direnv cache, and `nix build` links (run from the project root)
 .direnv/
+/result
+/result-*
+
+# Secrets: .envrc loads .env. Commit an .env.example instead.
 .env
-.cache/
-build/
-result
+.env.*
+!.env.example
+
+# CMake preset build trees (build/<preset>/): objects, _deps/,
+# compile_commands.json, and clangd's index (build/debug/.cache/clangd/)
+/build/
+
+# Personal presets; CMake's manual says never to commit this file
+/CMakeUserPresets.json
 ```
 
 `templates/cpp/CMakeLists.txt`:
@@ -804,8 +819,8 @@ endif()
 
 - `binaryDir` per preset lets `debug`, `asan` and `release` coexist without reconfiguring.
 - `base` and hidden presets exist so each configuration states only its difference.
-- `CMakeUserPresets.json` is the standard place for personal presets; add it to `.gitignore` if you
-  create one.
+- `CMakeUserPresets.json` is the standard place for personal presets. CMake's manual says not to
+  commit it, so the template's `.gitignore` lists it ([gitignore.md](gitignore.md) §10).
 
 `templates/cpp/.clangd`:
 

@@ -347,17 +347,31 @@ dotenv_if_exists
 3.13
 ```
 
-`templates/python/.gitignore` (there is no global ignore, so this is the whole list):
+`templates/python/.gitignore` (reasons for each line: [gitignore.md](gitignore.md) §10):
 
 ```gitignore
+# macOS Finder metadata
 .DS_Store
+
+# direnv/nix-direnv cache, and `nix build` links (run from the project root)
 .direnv/
-.venv/
+/result
+/result-*
+
+# Secrets: .envrc loads .env. Commit an .env.example instead.
 .env
+.env.*
+!.env.example
+
+# Bytecode: CPython writes no ignore file into __pycache__/
 __pycache__/
-.pytest_cache/
-.ruff_cache/
-result
+
+# Virtual environment. uv (and Python 3.13+ venv) put a "*" .gitignore
+# inside; `python3 -m venv` with an older Python does not.
+.venv/
+
+# Not listed: each writes its own "*" .gitignore.
+# .ruff_cache/ (ruff), .pytest_cache/ (pytest), dist/ (uv build)
 ```
 
 `templates/python/.vscode/settings.json`:

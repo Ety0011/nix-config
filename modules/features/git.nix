@@ -9,8 +9,10 @@
       # HM's pre-25.05 default writes an openpgp signing config and pulls in
       # gnupg. Nothing is signed today.
       signing.format = null;
-      # No global ignores: each repo's .gitignore says what it skips, so
-      # collaborators and `nix flake init` see the same files you do.
+      # Only files no repo ever tracks. Never .envrc, .env, .vscode/, .venv:
+      # a global match silently drops a file from every repo and template
+      # (docs/research/gitignore.md §3.2). Each repo's .gitignore lists the rest.
+      ignores = [ ".DS_Store" ];
       settings = {
         init.defaultBranch = "main";
         pull.rebase = false;
