@@ -20,6 +20,11 @@
         };
       });
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
+      # Outside git, treefmt would take its config's /nix/store folder as the
+      # tree root and walk the whole store. Root it at this folder; run `nix fmt`
+      # from nix/.
+      formatter = forAllSystems (
+        pkgs: pkgs.nixfmt-tree.override { settings.tree-root-file = "flake.nix"; }
+      );
     };
 }

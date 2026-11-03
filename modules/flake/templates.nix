@@ -11,15 +11,16 @@
     welcomeText = ''
       # Python project
 
-      Next steps:
+      Next steps (git is optional: the flake is in `nix/`):
 
       ```sh
-      direnv allow         # loads uv from flake.nix
-      uv init --app        # or --lib; writes pyproject.toml
+      direnv allow                   # loads uv from nix/flake.nix
+      uv init --app --vcs none       # or --lib; or --bare for pyproject.toml only
       uv add --dev ruff basedpyright pytest
       ```
 
       `.python-version` sets the Python version for uv here and in CI.
+      Nix commands take `path:./nix`: `nix flake update --flake path:./nix`.
     '';
   };
 
@@ -29,16 +30,16 @@
     welcomeText = ''
       # C and C++ project
 
-      Next steps:
+      Next steps (git is optional: the flake is in `nix/`):
 
       ```sh
-      direnv allow                     # loads clang, CMake, Ninja, clangd from flake.nix
+      direnv allow                     # loads clang, CMake, Ninja, clangd from nix/flake.nix
       cmake --workflow --preset debug  # configure, build, test
       ./build/debug/app
       ```
 
-      Rename `app` in `CMakeLists.txt`. After `nix flake update`, run
-      `cmake --fresh --preset debug`: build dirs cache the old store paths.
+      Rename `app` in `CMakeLists.txt`. After `nix flake update --flake path:./nix`,
+      run `cmake --fresh --preset debug`: build dirs cache the old store paths.
     '';
   };
 }

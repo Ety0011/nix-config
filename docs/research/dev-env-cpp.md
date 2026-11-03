@@ -33,10 +33,10 @@ Familiarity was not used as a reason for any pick.
 - **One template, `#cpp`, covers both languages:** a C library, a C++ executable and a C test.
   No `#c` alias; a C-only project is four small edits (§4.9, §9.4, tested).
 - **CI cannot skip Nix.** The shell holds the compiler, so this is the "Nix in CI wins" branch of
-  [dev-env.md §7](dev-env.md): `install-nix-action` plus `nix develop -c …` on `ubuntu-latest`.
+  [dev-env.md §7](dev-env.md): `install-nix-action` plus `nix develop path:./nix -c …` on `ubuntu-latest`.
   `ubuntu-latest` tops out at clang 18.1.3 against the shell's 22.1.8 (§7).
 - **The one sharp edge left:** a build directory keeps old store paths after a toolchain or library
-  change, with no warning. Run `cmake --fresh --preset debug` after `nix flake update` (§8).
+  change, with no warning. Run `cmake --fresh --preset debug` after `nix flake update --flake path:./nix` (§8).
 - **Editor:** clangd has to run inside the shell's environment. A VS Code that has not loaded the
   shell falls back to `/usr/bin/clangd`, which reports false errors (§6.1, tested without VS Code).
 
@@ -309,8 +309,9 @@ General nix-direnv behaviour (caching, GC roots, what invalidates the cache) is 
 
 ### 5.1 The `.envrc`
 
-There is no language step, so it is `use flake` and `dotenv_if_exists`. No `watch_file` is needed:
-nix-direnv already watches `flake.nix` and `flake.lock`. Tested: first load built the shell;
+There is no language step, so it is `use flake path:./nix` and `dotenv_if_exists` (the flake is in
+`nix/`, [dev-env-no-git.md](dev-env-no-git.md)). No `watch_file` is needed: nix-direnv already
+watches `nix/flake.nix` and `nix/flake.lock`. Tested: first load built the shell;
 the next printed "Using cached dev shell" in 0.1 s [local].
 
 ### 5.2 What a stdenv shell puts in your environment
@@ -504,7 +505,7 @@ Run on the same `-g -O0` binary, breakpoint in `add` [local]:
 
 The general rule and runner costs are in [dev-env.md §7](dev-env.md).
 
-- **Pick: `cachix/install-nix-action` on `ubuntu-latest`, everything through `nix develop -c`.** This
+- **Pick: `cachix/install-nix-action` on `ubuntu-latest`, everything through `nix develop path:./nix -c`.** This
   is the branch that note calls "the shell supplies tools the tests run"; here that is the compiler.
 - **Can CI skip Nix? Not without losing what the flake pins.**
   - **Fact:** `ubuntu-latest` is Ubuntu 24.04 [runner-readme#L25]. Its newest clang, clang-format
@@ -529,18 +530,18 @@ The general rule and runner costs are in [dev-env.md §7](dev-env.md).
 The `flake.lock` and CI-action rows are in [dev-env.md §8](dev-env.md); here `flake.lock` carries
 much more.
 
-| What                                          | Pinned by                                       | Update with                               |
-| --------------------------------------------- | ----------------------------------------------- | ----------------------------------------- |
-| clang, clangd, clang-format, clang-tidy, lldb | `llvmPackages_22` in `flake.nix` + `flake.lock` | edit the attribute; `nix flake update`    |
-| CMake, Ninja                                  | `flake.lock`                                    | `nix flake update`                        |
-| Libraries in `buildInputs`                    | `flake.lock`                                    | `nix flake update`                        |
-| Apple SDK, deployment target                  | stdenv defaults, or `buildInputs`               | add `apple-sdk_N`, `darwinMinVersionHook` |
-| Language standards, warnings                  | `CMakeLists.txt`                                | edit                                      |
-| Build configurations                          | `CMakePresets.json`                             | edit                                      |
-| Format, lint rules                            | `.clang-format`, `.clang-tidy`                  | edit                                      |
-| FetchContent sources, if any                  | tag or hash in `CMakeLists.txt`                 | edit                                      |
+| What                                          | Pinned by                                       | Update with                                               |
+| --------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------- |
+| clang, clangd, clang-format, clang-tidy, lldb | `llvmPackages_22` in `flake.nix` + `flake.lock` | edit the attribute; `nix flake update --flake path:./nix` |
+| CMake, Ninja                                  | `flake.lock`                                    | `nix flake update --flake path:./nix`                     |
+| Libraries in `buildInputs`                    | `flake.lock`                                    | `nix flake update --flake path:./nix`                     |
+| Apple SDK, deployment target                  | stdenv defaults, or `buildInputs`               | add `apple-sdk_N`, `darwinMinVersionHook`                 |
+| Language standards, warnings                  | `CMakeLists.txt`                                | edit                                                      |
+| Build configurations                          | `CMakePresets.json`                             | edit                                                      |
+| Format, lint rules                            | `.clang-format`, `.clang-tidy`                  | edit                                                      |
+| FetchContent sources, if any                  | tag or hash in `CMakeLists.txt`                 | edit                                                      |
 
-**After `nix flake update`, run `cmake --fresh --preset debug` for each preset you use, or
+**After `nix flake update --flake path:./nix`, run `cmake --fresh --preset debug` for each preset you use, or
 `rm -rf build`.** This is the one place the design is worse than Python, where `uv sync` rebuilds a
 stale venv by itself.
 
@@ -576,21 +577,21 @@ Addition to `modules/flake/templates.nix`, next to `python`:
     welcomeText = ''
       # C and C++ project
 
-      Next steps:
+      Next steps (git is optional: the flake is in `nix/`):
 
       ```sh
-      direnv allow                     # loads clang, CMake, Ninja, clangd from flake.nix
+      direnv allow                     # loads clang, CMake, Ninja, clangd from nix/flake.nix
       cmake --workflow --preset debug  # configure, build, test
       ./build/debug/app
       ```
 
-      Rename `app` in `CMakeLists.txt`. After `nix flake update`, run
-      `cmake --fresh --preset debug`: build dirs cache the old store paths.
+      Rename `app` in `CMakeLists.txt`. After `nix flake update --flake path:./nix`,
+      run `cmake --fresh --preset debug`: build dirs cache the old store paths.
     '';
   };
 ````
 
-`templates/cpp/flake.nix`:
+`templates/cpp/nix/flake.nix`:
 
 ```nix
 {
@@ -639,7 +640,12 @@ Addition to `modules/flake/templates.nix`, next to `python`:
         }
       );
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
+      # Outside git, treefmt would take its config's /nix/store folder as the
+      # tree root and walk the whole store. Root it at this folder; run `nix fmt`
+      # from nix/.
+      formatter = forAllSystems (
+        pkgs: pkgs.nixfmt-tree.override { settings.tree-root-file = "flake.nix"; }
+      );
     };
 }
 ```
@@ -647,7 +653,9 @@ Addition to `modules/flake/templates.nix`, next to `python`:
 `templates/cpp/.envrc`:
 
 ```bash
-use flake
+# The flake is in nix/ and loaded as a path: flake, so Nix copies only that
+# folder into /nix/store, with or without git, tracked or not.
+use flake path:./nix
 
 # Secrets go in .env (gitignored), never in this file.
 dotenv_if_exists
@@ -946,9 +954,9 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: cachix/install-nix-action@v31.11.3
       # The shell holds the compiler, so CI uses the same one as you do.
-      - run: nix develop -c cmake --workflow --preset ci
-      - run: nix develop -c sh -c "git ls-files -z '*.c' '*.h' '*.cpp' '*.hpp' '*.cc' '*.cxx' '*.hh' | xargs -0 -r clang-format --dry-run --Werror"
-      - run: nix develop -c run-clang-tidy -p build/ci -quiet
+      - run: nix develop path:./nix -c cmake --workflow --preset ci
+      - run: nix develop path:./nix -c sh -c "git ls-files -z '*.c' '*.h' '*.cpp' '*.hpp' '*.cc' '*.cxx' '*.hh' | xargs -0 -r clang-format --dry-run --Werror"
+      - run: nix develop path:./nix -c run-clang-tidy -p build/ci -quiet
 ```
 
 ### 9.2 Adding it to nix-config
@@ -974,13 +982,14 @@ Verified in this repo on top of `578e432` [local]:
 
 ```sh
 mkdir ~/Documents/projects/foo && cd ~/Documents/projects/foo
-git init                                    # first: see dev-env-python.md §9.3
-nix flake init -t ~/nix-config#cpp          # or -t github:Ety0011/nix-config#cpp once pushed
+nix flake init -t ~/nix-config#cpp          # or -t github:Ety0011/nix-config#cpp
 direnv allow
 cmake --workflow --preset debug             # configure, build, test
 ./build/debug/app
-git add -A && git commit -m "chore: project skeleton"
+git init && git add -A && git commit -m "chore: project skeleton"   # optional, any time
 ```
+
+`nix fmt` in the project runs from `nix/`; in a repo it needs `nix/` tracked [local].
 
 Then rename `app` in `CMakeLists.txt` and `.vscode/launch.json`. Daily commands:
 
@@ -1011,7 +1020,7 @@ There is no "manually-specified variables were not used" warning [local].
 
 ### 9.5 Adding a library
 
-Tested with fmt, zlib and Catch2 [local].
+Tested with fmt, zlib and Catch2 [local]. In `nix/flake.nix`:
 
 ```nix
 buildInputs = [ pkgs.fmt pkgs.catch2_3 pkgs.zlib ];
@@ -1101,7 +1110,8 @@ nothing in `~/.local/share/direnv` or the repo changed [local]. nixpkgs-unstable
 | `actionlint ci.yml`                                                           | ok                                                                                     |
 | fresh clone, near-empty `env -i`, `nix develop -c` for each CI step           | all three steps pass                                                                   |
 
-Template-mechanics runs (init, the `git init` order): [dev-env.md §9](dev-env.md).
+Template-mechanics runs (init, the `git init` order): [dev-env.md §9](dev-env.md). Runs with no
+git and `path:./nix`: [dev-env-no-git.md §9](dev-env-no-git.md).
 
 ---
 

@@ -14,6 +14,7 @@ choice and a worked template:
 
 - **Python:** [dev-env-python.md](dev-env-python.md), template `templates/python/`.
 - **C and C++:** [dev-env-cpp.md](dev-env-cpp.md), template `templates/cpp/`.
+- **No git:** [dev-env-no-git.md](dev-env-no-git.md), why the flake is in `nix/`.
 - Add `dev-env-<lang>.md` for each new language, built on this pattern, and list it here.
 
 ---
@@ -21,7 +22,7 @@ choice and a worked template:
 ## 1. TL;DR
 
 - **Pattern: a flake `templates` output in nix-config. Each project gets its own small, plain
-  `flake.nix` plus `.envrc`.** Nix supplies the tools. Where the language has a package manager
+  `nix/flake.nix`, loaded by `use flake path:./nix` in `.envrc`.** Nix supplies the tools. Where the language has a package manager
   that also supplies the language (Python: `uv`), Nix supplies only that manager, and the manager
   supplies the language and its dependencies from its own lockfile. Where none does (C and C++),
   Nix supplies the compiler and libraries, and `flake.lock` is the lockfile. direnv with
@@ -33,8 +34,8 @@ choice and a worked template:
 - **CI:** when the shell only carries the language's package manager, use that manager's own
   setup action on `ubuntu-latest`, without Nix. Nix in CI pays off once the shell carries other
   tools the tests run (§7). Skip macOS runners: they cost about 10× more per minute [gh-prices].
-- **Gotcha found:** run `git init` before `nix flake init`. Otherwise the files the template
-  writes are untracked, and evaluation fails (tested). A second gotcha, the global `.envrc`
+- **No git needed.** The flake sits in `nix/` and loads as `path:./nix`, which copies only that
+  folder, with or without git (dev-env-no-git.md). A former gotcha, the global `.envrc`
   ignore hiding `templates/python/.envrc`, is gone: the global ignores were removed from
   `git.nix` after this research (§12).
 - **Alternatives:** devenv when a project needs services (PostgreSQL, Redis); devshell, flox and
@@ -98,8 +99,8 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
   the flake in 'path'") [nix-flake.cc#L556-558]. The template's own `flake.nix` is never evaluated
   by nix-config's check, so each language doc tests its template separately.
 - **Fact:** `nix flake new -t … <dir>` does the same into a new directory without `git init`
-  [local]. **Assessment:** use `git init && nix flake init`;
-  [dev-env-python.md §9.3](dev-env-python.md) shows why.
+  [local]. **Assessment:** `git init` is optional. In a repo, init stages its files with `-N`,
+  and `path:./nix` does not need that either (dev-env-no-git.md).
 
 ### 4.2 Where it goes in this repo
 
@@ -188,7 +189,7 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
   `--no-binary-package`) compiled fine with Xcode's `/usr/bin/cc`. `sysconfig` `CC` is `cc`
   [local]. On typhon there is no system compiler; see [dev-env-python.md §4.4](dev-env-python.md).
 - **`mkShell`** when Nix supplies the compiler (C and C++; see [dev-env-cpp.md §4](dev-env-cpp.md)).
-- **Update cadence:** `nix flake update`, per language.
+- **Update cadence:** `nix flake update --flake path:./nix`, per language.
   - Python: when you want a newer uv, or monthly. The lock only moves `uv` and `nixfmt-tree`, so
     this is low risk.
   - C and C++: when you need a newer CMake or library, not on a timer. It moves every library and
@@ -208,7 +209,9 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
   [nd-readme#L348-358].
 - **Fact:** the cache is invalidated only when `~/.direnvrc`, `.envrc`, `flake.nix`, `flake.lock`,
   `devshell.toml` or a file watched _before_ `use flake` is newer than the cache
-  [nd-direnvrc#L298-304] [nd-direnvrc#L318-341] [nd-readme#L300-326]. Tested: `touch uv.lock`
+  [nd-direnvrc#L298-304] [nd-direnvrc#L318-341] [nd-readme#L300-326]. With `use flake path:./nix`
+  those are `nix/flake.nix` and `nix/flake.lock`: nix-direnv watches the directory the ref names
+  (dev-env-no-git.md, at a newer nix-direnv commit). Tested: `touch uv.lock`
   printed "Using cached dev shell", and a reload with a warm cache took 0.1 s [local].
 - **Fact:** direnv carries on after a failing command in `.envrc`. With a stale lock the env still
   loaded and the uv error was printed [local].
@@ -237,7 +240,7 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
   - **Fact:** standard runners are free in public repos [gh-billing#L127-130].
   - **Assessment:** run Linux only. helios is your macOS test.
 - **When Nix in CI wins:** the shell supplies non-Python tools the tests call (ffmpeg, a database
-  client, texlive). Then `cachix/install-nix-action` plus `nix develop -c uv run pytest` on Ubuntu
+  client, texlive). Then `cachix/install-nix-action` plus `nix develop path:./nix -c uv run pytest` on Ubuntu
   only. Verified locally on darwin: `nix develop -c sh -c 'uv run pytest'` passed [local].
 - **Automated updates (optional, untested):**
   - **Fact:** Dependabot supports `uv` (version and security updates) [dbot#L58-61].
@@ -248,11 +251,11 @@ Python-specific candidates (uv, uv2nix, pixi, ruff, basedpyright, ty, setup-uv) 
 
 ## 8. What is pinned where, and how updates flow
 
-| What                                                                            | Pinned by                                           | Update with                                          |
-| ------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
-| Everything Nix supplies: uv (Python); CMake, libraries (C and C++); nixfmt-tree | `flake.lock` (nixpkgs-unstable rev)                 | `nix flake update` (C and C++: then `cmake --fresh`) |
-| LLVM (C and C++): compiler, clangd, clang-tidy, lldb                            | `llvmPackages_22` in `flake.nix`, then `flake.lock` | major: edit the attribute; minor: `nix flake update` |
-| CI actions                                                                      | exact tags in `ci.yml`                              | edit (or Dependabot `github-actions`)                |
+| What                                                                            | Pinned by                                           | Update with                                                             |
+| ------------------------------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------- |
+| Everything Nix supplies: uv (Python); CMake, libraries (C and C++); nixfmt-tree | `flake.lock` (nixpkgs-unstable rev)                 | `nix flake update --flake path:./nix` (C and C++: then `cmake --fresh`) |
+| LLVM (C and C++): compiler, clangd, clang-tidy, lldb                            | `llvmPackages_22` in `flake.nix`, then `flake.lock` | major: edit the attribute; minor: `nix flake update`                    |
+| CI actions                                                                      | exact tags in `ci.yml`                              | edit (or Dependabot `github-actions`)                                   |
 
 - Language rows (interpreter, packages, tool config): [dev-env-python.md §8](dev-env-python.md)
   and [dev-env-cpp.md §8](dev-env-cpp.md).
@@ -265,17 +268,17 @@ All runs were in the scratchpad, with uv's Python and cache dirs redirected ther
 (`UV_PYTHON_INSTALL_DIR`, `UV_CACHE_DIR`) [local]. The global git ignores were still in place for
 these runs.
 
-| Command                                                                              | Outcome                                                         |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
-| `git clone ~/nix-config` → copy; add `templates.nix` + `templates/python`; `git add` | `.envrc` silently missing (global ignore)                       |
-| `nix flake init -t <copy>#python` before `git add -f .envrc`                         | 6 files written, no `.envrc`, no warning                        |
-| same after `git add -f templates/python/.envrc`                                      | 7 files written and staged intent-to-add; welcomeText rendered  |
-| second module defining `flake.templates.c`                                           | error "defined multiple times while it's expected to be unique" |
-| `nix flake check --no-build` on the copy                                             | "checking template 'templates.python'… all checks passed"       |
-| `nix fmt` on the copy                                                                | 0 files changed                                                 |
-| `direnv allow` + `direnv exec . …` (first load)                                      | shell built; then "Using cached dev shell", 0.1 s               |
-| `touch uv.lock`, reload                                                              | "Using cached dev shell" (no Nix re-eval)                       |
-| `nix flake new` + `uv init` (no prior `git init`)                                    | "Path 'flake.nix' … is not tracked by Git"                      |
+| Command                                                                              | Outcome                                                                                               |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `git clone ~/nix-config` → copy; add `templates.nix` + `templates/python`; `git add` | `.envrc` silently missing (global ignore)                                                             |
+| `nix flake init -t <copy>#python` before `git add -f .envrc`                         | 6 files written, no `.envrc`, no warning                                                              |
+| same after `git add -f templates/python/.envrc`                                      | 7 files written and staged intent-to-add; welcomeText rendered                                        |
+| second module defining `flake.templates.c`                                           | error "defined multiple times while it's expected to be unique"                                       |
+| `nix flake check --no-build` on the copy                                             | "checking template 'templates.python'… all checks passed"                                             |
+| `nix fmt` on the copy                                                                | 0 files changed                                                                                       |
+| `direnv allow` + `direnv exec . …` (first load)                                      | shell built; then "Using cached dev shell", 0.1 s                                                     |
+| `touch uv.lock`, reload                                                              | "Using cached dev shell" (no Nix re-eval)                                                             |
+| `nix flake new` + `uv init` (no prior `git init`)                                    | "Path 'flake.nix' … is not tracked by Git" (root flake; gone with `path:./nix`, dev-env-no-git.md §5) |
 
 Python-specific runs: [dev-env-python.md §10](dev-env-python.md).
 
@@ -292,7 +295,7 @@ Python-specific runs: [dev-env-python.md §10](dev-env-python.md).
 | features.md L40, L364-366      | uv "when needed", via HM `programs.uv`, "manages its own Pythons, so no store-path venvs that break after gc" | **Partly overturned:** uv comes from each project's flake, not HM; no global uv needed. The gc concern is moot in both variants: nix-direnv roots the shell and uv rebuilds the venv when the interpreter changes (tested) |
 | features.md L106 (§3.2)        | Keep `nix-direnv`; it roots devShells against gc                                                              | **Confirmed** from source [nd-direnvrc#L208-212] [nd-direnvrc#L357-377]                                                                                                                                                    |
 | features.md L200, L274 (§3.15) | Remove `c`/`python` devShells or turn them into templates                                                     | **Confirmed**, and done: devShells dropped in `9f2a720`; templates added in `d96a70b` (`python`) and `1e0932d` (`cpp`)                                                                                                     |
-| features.md L362-364           | Trigger: next C or Python project; `nix flake init -t ~/nix-config#python`                                    | **Confirmed**, with one precondition: `git init` first (`git add -f` no longer needed). C and C++ use `#cpp`                                                                                                               |
+| features.md L362-364           | Trigger: next C or Python project; `nix flake init -t ~/nix-config#python`                                    | **Confirmed**, no precondition since dev-env-no-git.md (`git add -f` no longer needed). C and C++ use `#cpp`                                                                                                               |
 | features.md L497               | "refactor: drop devShells (or templates)"                                                                     | Done (`9f2a720`)                                                                                                                                                                                                           |
 
 ---

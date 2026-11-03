@@ -171,7 +171,9 @@ General nix-direnv behaviour (caching, GC roots, what invalidates the cache) is 
   `six` to `pyproject.toml` by hand, `import six` failed and there was no warning. `--locked` fails
   loudly instead [uv-env#L388-396] [local].
 - **So the `.envrc` (§9.1):**
-  - `use flake`, then the `layout uv` steps written out with `--locked --quiet`.
+  - `use flake path:./nix` (the flake is in `nix/`, [dev-env-no-git.md](dev-env-no-git.md)), then
+    the `layout uv` steps written out with `--locked --quiet`. `layout uv` itself cannot take
+    `--locked` (dev-env-no-git.md §6.1).
   - Gate them on `uv.lock`, so the moment between `uv init` and `uv add` prints nothing.
   - Then `dotenv_if_exists`. Keep it as an explicit block even after direnv 2.38: `layout uv`
     hard-codes `--frozen` [direnv-stdlib#L1162].
@@ -200,7 +202,9 @@ General nix-direnv behaviour (caching, GC roots, what invalidates the cache) is 
     it strict in silcrst-team. **Assessment:** keep mypy where plugins or an existing mypy config
     matter. For new projects, basedpyright avoids the "Pylance says X, mypy says Y" split.
 - **treefmt-nix per project: no.** ruff covers the Python. `nix fmt` with `nixfmt-tree` (treefmt
-  preconfigured for nixfmt) covers `flake.nix` with no extra input [local].
+  preconfigured for nixfmt) covers `flake.nix` with no extra input [local]. Run it from `nix/`;
+  the formatter sets `tree-root-file = "flake.nix"`, because outside git treefmt would take its
+  config's store folder as the tree root (dev-env-no-git.md §4.3).
 - **How VS Code finds things:**
   - **Fact:** the Python Environments extension auto-selects a workspace `.venv` first
     [vsc-envs#L139-142] [vsc-envs#L417-423]. Its locator (PET 1.40.0, run directly) reported the
@@ -233,12 +237,12 @@ The general rule and runner costs are in [dev-env.md §7](dev-env.md).
 
 The `flake.lock` and CI-action rows are in [dev-env.md §8](dev-env.md).
 
-| What                                                  | Pinned by                                               | Update with                                             |
-| ----------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
-| Python minor (or patch)                               | `.python-version` (read by uv, setup-uv, collaborators) | edit the file                                           |
-| Python patch (if minor only)                          | the uv version's download list                          | `nix flake update` locally; CI uses latest uv           |
-| Every Python package incl. ruff, basedpyright, pytest | `uv.lock`                                               | `uv lock --upgrade` or `uv lock --upgrade-package ruff` |
-| Tool config                                           | `pyproject.toml` `[tool.*]`                             | edit                                                    |
+| What                                                  | Pinned by                                               | Update with                                                      |
+| ----------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------- |
+| Python minor (or patch)                               | `.python-version` (read by uv, setup-uv, collaborators) | edit the file                                                    |
+| Python patch (if minor only)                          | the uv version's download list                          | `nix flake update --flake path:./nix` locally; CI uses latest uv |
+| Every Python package incl. ruff, basedpyright, pytest | `uv.lock`                                               | `uv lock --upgrade` or `uv lock --upgrade-package ruff`          |
+| Tool config                                           | `pyproject.toml` `[tool.*]`                             | edit                                                             |
 
 - After any of these, the next `cd` runs `uv sync --locked`. It rebuilds `.venv` if the
   interpreter changed (tested), and it is a no-op otherwise ("Checked 9 packages in 0.22ms")
@@ -266,21 +270,22 @@ The `flake.lock` and CI-action rows are in [dev-env.md §8](dev-env.md).
     welcomeText = ''
       # Python project
 
-      Next steps:
+      Next steps (git is optional: the flake is in `nix/`):
 
       ```sh
-      direnv allow         # loads uv from flake.nix
-      uv init --app        # or --lib; writes pyproject.toml
+      direnv allow                   # loads uv from nix/flake.nix
+      uv init --app --vcs none       # or --lib; or --bare for pyproject.toml only
       uv add --dev ruff basedpyright pytest
       ```
 
       `.python-version` sets the Python version for uv here and in CI.
+      Nix commands take `path:./nix`: `nix flake update --flake path:./nix`.
     '';
   };
 }
 ````
 
-`templates/python/flake.nix`:
+`templates/python/nix/flake.nix`:
 
 ```nix
 {
@@ -305,7 +310,12 @@ The `flake.lock` and CI-action rows are in [dev-env.md §8](dev-env.md).
         };
       });
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
+      # Outside git, treefmt would take its config's /nix/store folder as the
+      # tree root and walk the whole store. Root it at this folder; run `nix fmt`
+      # from nix/.
+      formatter = forAllSystems (
+        pkgs: pkgs.nixfmt-tree.override { settings.tree-root-file = "flake.nix"; }
+      );
     };
 }
 ```
@@ -313,7 +323,9 @@ The `flake.lock` and CI-action rows are in [dev-env.md §8](dev-env.md).
 `templates/python/.envrc`:
 
 ```bash
-use flake
+# The flake is in nix/ and loaded as a path: flake, so Nix copies only that
+# folder into /nix/store, with or without git, tracked or not.
+use flake path:./nix
 
 # uv owns Python and .venv (.python-version, pyproject.toml, uv.lock).
 # Like direnv 2.38's `layout uv`, but --locked: a stale uv.lock is an
@@ -435,29 +447,32 @@ Verified on a copy of the repo at `70c1710` [local]:
 
 ```sh
 mkdir ~/Documents/projects/foo && cd ~/Documents/projects/foo
-git init                                    # first: init stages its files only inside a repo
-nix flake init -t ~/nix-config#python       # or -t github:Ety0011/nix-config#python once pushed
+nix flake init -t ~/nix-config#python       # or -t github:Ety0011/nix-config#python
 direnv allow
-uv init --app                               # --lib for a library; keeps the template's .gitignore
+uv init --app --vcs none                    # --lib for a library; --bare for notebooks or data
 uv add --dev ruff basedpyright pytest
 uv add <your dependencies>
-git add -A && git commit -m "chore: project skeleton"
+git init && git add -A && git commit -m "chore: project skeleton"   # optional, any time
 ```
+
+`nix fmt` runs from `nix/`. In a repo it needs `nix/` tracked (it cannot take `path:`); direnv
+does not [local].
 
 - Every line was run in the scratchpad, using `direnv exec . <cmd>` in place of the interactive
   hook [local].
 - The `github:` form needs nix-config pushed with the template (the repo is public [gh-meta]). It
   is not tested.
-- **Why `git init` first** (tested): with `nix flake new` into a directory without git, `uv init`
-  then created the repo. The flake files stayed untracked and the next load failed: "Path
-  'flake.nix' … is not tracked by Git", followed by nix-direnv's fallback [local].
+- **`git init` can come at any time** (tested). The old failure, `uv init` creating the repo and
+  the next load stopping with "Path 'flake.nix' … is not tracked by Git", came from the root
+  flake. With `path:./nix` the load does not depend on git (dev-env-no-git.md §5) [local].
 - `uv init --app` in uv 0.13.5 produced a `src/<name>/` package with `[project.scripts]` and the
   `uv_build` backend [local].
 
 ### 9.4 Runner-up flake (nixpkgs Python), tested
 
-Use this when §4.3's conditions hold. Make the `.envrc` start with `watch_file .python-version`,
-_before_ `use flake`, because this flake reads that file.
+Use this when §4.3's conditions hold. It goes in `nix/flake.nix` like the template's. It cannot
+read `../.python-version`: that is outside the `path:` source (tested, dev-env-no-git.md). So the
+Python attribute is written out; keep it in step with `.python-version` by hand.
 
 ```nix
 {
@@ -471,19 +486,13 @@ _before_ `use flake`, because this flake reads that file.
       inherit (nixpkgs) lib;
       forAllSystems =
         f: lib.genAttrs [ "aarch64-darwin" "x86_64-linux" ] (system: f nixpkgs.legacyPackages.${system});
-      # One source of truth for the Python minor version: uv, setup-uv and this
-      # flake all read .python-version ("3.13" -> pkgs.python313).
-      pythonAttr =
-        "python"
-        + lib.replaceStrings [ "." ] [ "" ] (
-          lib.versions.majorMinor (lib.trim (builtins.readFile ./.python-version))
-        );
     in
     {
       devShells = forAllSystems (
         pkgs:
         let
-          python = pkgs.${pythonAttr};
+          # Same minor version as .python-version.
+          python = pkgs.python313;
         in
         {
           default = pkgs.mkShellNoCC {
@@ -503,7 +512,12 @@ _before_ `use flake`, because this flake reads that file.
         }
       );
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
+      # Outside git, treefmt would take its config's /nix/store folder as the
+      # tree root and walk the whole store. Root it at this folder; run `nix fmt`
+      # from nix/.
+      formatter = forAllSystems (
+        pkgs: pkgs.nixfmt-tree.override { settings.tree-root-file = "flake.nix"; }
+      );
     };
 }
 ```
@@ -522,10 +536,10 @@ _before_ `use flake`, because this flake reads that file.
 
   ```sh
   cd <project>
-  git mv flake.nix flake.nix.old            # init refuses to overwrite; delete after
-  mv .envrc .envrc.old                       # move its export lines into .env as KEY=value
+  mv .envrc .envrc.old                       # init refuses to overwrite it; move its export lines into .env
   rm -rf .venv
-  nix flake init -t ~/nix-config#python
+  nix flake init -t ~/nix-config#python      # writes nix/flake.nix: no clash with the old root flake.nix
+  git rm flake.nix flake.lock && rm .envrc.old   # outside git: plain rm
   direnv allow
   uv lock                                     # from the existing pyproject.toml
   uv add -r requirements.txt                  # only where deps live in requirements.txt
@@ -542,7 +556,8 @@ _before_ `use flake`, because this flake reads that file.
 
 All runs were in the scratchpad, with uv's Python and cache dirs redirected there
 (`UV_PYTHON_INSTALL_DIR`, `UV_CACHE_DIR`) [local]. The global git ignores were still in place for
-these runs.
+these runs. The runs with no git and `path:./nix` are in
+[dev-env-no-git.md §9](dev-env-no-git.md).
 
 | Command                                                                                                                               | Outcome                                                                                          |
 | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
