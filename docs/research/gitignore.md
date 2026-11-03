@@ -415,9 +415,11 @@ README.md nix/flake.{lock,nix} pyproject.toml src/… tests/test_x.py uv.lock`.
   ignored were `.DS_Store .direnv/ .env CMakeUserPresets.json build/`; everything else stayed
   visible.
 
-nix-config's own `.gitignore` follows the same rules: `.DS_Store`, and the out-links anchored as
-`/result` and `/result-*`, because it applies inside `templates/` too. The repo root has no
-`.envrc` or `.env`, so nothing else belongs there.
+nix-config's own `.gitignore` holds only the out-links, anchored as `/result` and `/result-*`,
+because it applies inside `templates/` too. `.DS_Store` is left to the global ignore: every Host
+that uses this repo gets it from `git.nix`, and nobody else works in the repo. The templates keep
+their `.DS_Store` line, because their projects get cloned on machines without it. The repo root
+has no `.envrc` or `.env`, so nothing else belongs there.
 
 ### 10.3 Add when (not in the lists, on purpose)
 

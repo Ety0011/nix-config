@@ -1,8 +1,5 @@
-# macOS Finder metadata. Also in the global ignore (git.nix); kept here for
-# other machines and clones.
-.DS_Store
-
 # Out-links of `nix build` / `darwin-rebuild build` run from the repo root.
-# Anchored: this file also applies inside templates/.
+# Anchored: this file also applies inside templates/. .DS_Store is in the
+# global ignore (modules/features/git.nix), which every Host here gets.
 /result
 /result-*
