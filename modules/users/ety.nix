@@ -20,6 +20,7 @@ in
       "obs"
       "obsidian"
       "openmtp"
+      "slack"
       "tailscale-app"
       "visual-studio-code"
       "vorssaint"
