@@ -81,3 +81,27 @@ helios. A second Mac gets its own Host with current values.
 
 Not installed yet. When it's time, follow
 [docs/research/rebuild-from-zero.md](docs/research/rebuild-from-zero.md) §3.3.
+
+## zephyr
+
+Android phone, not a Host: nothing here configures it. This repo keeps the master copy of
+its NAS backup, [devices/zephyr/backup-zephyr.sh](devices/zephyr/backup-zephyr.sh), which
+runs in Termux. Termux and Termux:API both come from F-Droid (installed through the F-Droid
+app, or Play Protect blocks Termux:API); the `i14-nas` remote is set up by hand with
+`rclone config`.
+
+```sh
+pkg install rclone termux-api
+cp backup-zephyr.sh ~/.local/bin/ && chmod +x ~/.local/bin/backup-zephyr.sh
+termux-job-scheduler --script /data/data/com.termux/files/home/.local/bin/backup-zephyr.sh \
+  --period-ms 3600000 --persisted true
+```
+
+Set Termux and Termux:API to Unrestricted battery. Log:
+`~/.local/state/backup-zephyr/backup-zephyr.log`. To restore Termux after a reinstall, run
+`termux-setup-storage`, then:
+
+```sh
+tar -xzf ~/storage/shared/Documents/termux-backup/termux-home.tar.gz -C /data/data/com.termux/files
+xargs pkg install -y < ~/storage/shared/Documents/termux-backup/termux-packages.txt
+```
