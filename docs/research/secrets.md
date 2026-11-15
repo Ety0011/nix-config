@@ -535,7 +535,7 @@ nh darwin build && nh darwin switch
 ls -l /run/secrets/                          # nas-* owned by ety, -r--------
 mount | grep secrets.d                       # hfs RAM disk, nobrowse
 sudo launchctl print system/org.nixos.sops-install-secrets | grep 'last exit code'
-rclone lsf i14-nas:home/backup --max-depth 1
+rclone lsf i14-nas:private-ety/backup --max-depth 1
 ```
 
 - `sops edit` decrypts into a temporary file while your editor is open. That is normal, and

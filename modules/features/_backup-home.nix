@@ -11,7 +11,7 @@
 }:
 let
   name = "backup-home";
-  share = "i14-nas:home";
+  share = "i14-nas:private-ety";
   remote = "${share}/backup";
 
   # Back up what you made; skip what can be downloaded or rebuilt. First match
