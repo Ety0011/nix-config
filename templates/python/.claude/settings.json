@@ -7,10 +7,7 @@
       "Read(./**/.env.*.local)",
       "Read(./**/cookies.txt)"
     ],
-    "ask": [
-      "Bash(git push)",
-      "Bash(git push *)"
-    ]
+    "ask": ["Bash(git push)", "Bash(git push *)"]
   },
   "attribution": {
     "commit": "",

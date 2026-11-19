@@ -6,6 +6,7 @@
    `claude plugin install mattpocock-skills@mattpocock --scope project`.
 4. Run `/setup-matt-pocock-skills` (issue tracker, labels, domain docs).
 -->
+
 # <project name>
 
 <One paragraph: what this project is, and where its spec lives.>
