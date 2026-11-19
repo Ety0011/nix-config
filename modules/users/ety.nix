@@ -77,7 +77,7 @@ in
         unstable.opencode
         nodejs
         htop
-        pixi
+        ffmpeg
       ];
     };
 }
