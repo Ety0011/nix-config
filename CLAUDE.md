@@ -1,6 +1,6 @@
 # nix-config
 
-Dendritic flake for Etienne's Hosts (`helios`: aarch64-darwin, `typhon`: x86_64-linux stub) and User `ety`. Vocabulary (Feature, Class, Host, User, Role) is in `GLOSSARY.md`; the composition model and its reasons are in `docs/adr/0001-composition-by-import.md`. Read `docs/research/dendritic-architecture.md` before changing how Hosts, Roles or Home Manager are wired.
+Dendritic flake for Etienne's Hosts (`helios`: aarch64-darwin, `typhon`: x86_64-linux stub) and User `ety`. `ARCHITECTURE.md` maps where things live and how a Feature reaches a Host (update its tables when adding a Feature, Role or Host). Vocabulary (Feature, Class, Host, User, Role) is in `GLOSSARY.md`; the composition model and its reasons are in `docs/adr/0001-composition-by-import.md`. Read `docs/research/dendritic-architecture.md` before changing how Hosts, Roles or Home Manager are wired.
 
 ## Commands
 

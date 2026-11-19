@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="composition-dark-title composition-dark-desc" id="composition-dark-root">
+<title id="composition-dark-title">How a Feature reaches a Host</title>
+<desc id="composition-dark-desc">Feature and User files write into flake.modules; a Host module imports the Role and User modules and becomes a system build and a flake check.</desc>
+<defs>
+      <style>#composition-dark-root { font-family: 'Geist', system-ui, sans-serif; color: #f5f5f5; }
+      #composition-dark-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#composition-dark-root .diagram-container { overflow-x: visible; }
+}</style>
+<marker id="composition-dark-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bfc0c0"/></marker>
+<marker id="composition-dark-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f08a59"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#2d3142"/>
+<rect x="24" y="48" width="200" height="416" rx="8" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="0.8" fill-opacity="0.03" stroke-opacity="0.10"/>
+<rect x="90" y="52" width="68" height="12" rx="2" fill="#2d3142"/>
+<text x="124" y="61" fill="#949eb2" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">SOURCE FILES</text>
+<rect x="264" y="48" width="216" height="416" rx="8" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="0.8" fill-opacity="0.03" stroke-opacity="0.10"/>
+<rect x="336" y="52" width="72" height="12" rx="2" fill="#2d3142"/>
+<text x="372" y="61" fill="#949eb2" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">FLAKE.MODULES</text>
+<rect x="768" y="152" width="176" height="208" rx="8" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="0.8" fill-opacity="0.03" stroke-opacity="0.10"/>
+<rect x="820" y="156" width="72" height="12" rx="2" fill="#2d3142"/>
+<text x="856" y="165" fill="#949eb2" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">FLAKE OUTPUTS</text>
+<line x1="208" y1="112" x2="280" y2="112" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<path d="M 124,144 V 248 Q 124,256 132,256 H 280" fill="none" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<line x1="372" y1="224" x2="372" y2="144" stroke="#f08a59" stroke-width="1.4" marker-end="url(#composition-dark-arrow-accent)"/>
+<line x1="208" y1="416" x2="280" y2="416" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<line x1="464" y1="112" x2="544" y2="112" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<line x1="464" y1="416" x2="544" y2="416" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<line x1="704" y1="216" x2="784" y2="216" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<line x1="704" y1="312" x2="784" y2="312" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<rect x="226" y="92" width="36" height="12" rx="2" fill="#2d3142"/>
+<text x="244" y="101" fill="#bfc0c0" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">WRITES</text>
+<rect x="226" y="396" width="36" height="12" rx="2" fill="#2d3142"/>
+<text x="244" y="405" fill="#bfc0c0" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">WRITES</text>
+<rect x="380" y="178" width="76" height="12" rx="2" fill="#2d3142"/>
+<text x="418" y="187" fill="#f08a59" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">SHAREDMODULES</text>
+<rect x="488" y="92" width="52" height="12" rx="2" fill="#2d3142"/>
+<text x="514" y="101" fill="#bfc0c0" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">IMPORTED</text>
+<rect x="488" y="396" width="52" height="12" rx="2" fill="#2d3142"/>
+<text x="514" y="405" fill="#bfc0c0" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">IMPORTED</text>
+<rect x="718" y="196" width="40" height="12" rx="2" fill="#2d3142"/>
+<text x="738" y="205" fill="#bfc0c0" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">BUILDS</text>
+<rect x="718" y="292" width="40" height="12" rx="2" fill="#2d3142"/>
+<text x="738" y="301" fill="#bfc0c0" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CHECKS</text>
+<rect x="40" y="80" width="168" height="64" rx="6" fill="#2d3142"/>
+<rect x="40" y="80" width="168" height="64" rx="6" fill="#bfc0c0" stroke="#949eb2" stroke-width="1" fill-opacity="0.10"/>
+<rect x="48" y="88" width="28" height="12" rx="2" fill="none" stroke="#949eb2" stroke-width="0.8" stroke-opacity="0.40"/>
+<text x="62" y="97" fill="#949eb2" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">FEAT</text>
+<text x="124" y="116" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Feature files</text>
+<text x="124" y="132" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">modules/features/</text>
+<rect x="40" y="384" width="168" height="64" rx="6" fill="#2d3142"/>
+<rect x="40" y="384" width="168" height="64" rx="6" fill="#bfc0c0" stroke="#949eb2" stroke-width="1" fill-opacity="0.10"/>
+<rect x="48" y="392" width="28" height="12" rx="2" fill="none" stroke="#949eb2" stroke-width="0.8" stroke-opacity="0.40"/>
+<text x="62" y="401" fill="#949eb2" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">USER</text>
+<text x="124" y="420" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">User file</text>
+<text x="124" y="436" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">modules/users/ety.nix</text>
+<rect x="280" y="80" width="184" height="64" rx="6" fill="#2d3142"/>
+<rect x="280" y="80" width="184" height="64" rx="6" fill="#f08a59" stroke="#f08a59" stroke-width="1" fill-opacity="0.10"/>
+<rect x="288" y="88" width="28" height="12" rx="2" fill="none" stroke="#f08a59" stroke-width="0.8" stroke-opacity="0.50"/>
+<text x="302" y="97" fill="#f08a59" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ROLE</text>
+<text x="372" y="116" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Role modules</text>
+<text x="372" y="132" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">&lt;class&gt;.base · desktop</text>
+<rect x="280" y="224" width="184" height="64" rx="6" fill="#2d3142"/>
+<rect x="280" y="224" width="184" height="64" rx="6" fill="#393e53" stroke="#f5f5f5" stroke-width="1"/>
+<rect x="288" y="232" width="20" height="12" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.40"/>
+<text x="298" y="241" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">HM</text>
+<text x="372" y="260" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Home Manager role</text>
+<text x="372" y="276" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">homeManager.base</text>
+<rect x="280" y="384" width="184" height="64" rx="6" fill="#2d3142"/>
+<rect x="280" y="384" width="184" height="64" rx="6" fill="#393e53" stroke="#f5f5f5" stroke-width="1"/>
+<rect x="288" y="392" width="44" height="12" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.40"/>
+<text x="310" y="401" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ONE-OFF</text>
+<text x="372" y="420" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">User &amp; one-off modules</text>
+<text x="372" y="436" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">ety · backup-home</text>
+<rect x="544" y="80" width="160" height="368" rx="6" fill="#2d3142"/>
+<rect x="544" y="80" width="160" height="368" rx="6" fill="#393e53" stroke="#f5f5f5" stroke-width="1"/>
+<rect x="552" y="88" width="28" height="12" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.40"/>
+<text x="566" y="97" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">HOST</text>
+<text x="624" y="262" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Host module</text>
+<text x="624" y="278" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">configurations</text>
+<text x="624" y="291" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">.&lt;class&gt;.&lt;host&gt;.module</text>
+<rect x="784" y="184" width="144" height="64" rx="6" fill="#2d3142"/>
+<rect x="784" y="184" width="144" height="64" rx="6" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<rect x="792" y="192" width="24" height="12" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.22"/>
+<text x="804" y="201" fill="#949eb2" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">OUT</text>
+<text x="856" y="220" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">System builds</text>
+<text x="856" y="236" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">*Configurations.&lt;host&gt;</text>
+<rect x="784" y="280" width="144" height="64" rx="6" fill="#2d3142"/>
+<rect x="784" y="280" width="144" height="64" rx="6" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<rect x="792" y="288" width="36" height="12" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.22"/>
+<text x="810" y="297" fill="#949eb2" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CHECK</text>
+<text x="856" y="316" fill="#f5f5f5" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Checks</text>
+<text x="856" y="332" fill="#bfc0c0" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">nix flake check</text>
+<text x="624" y="316" fill="#949eb2" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">helios · typhon</text>
+<line x1="40" y1="496" x2="920" y2="496" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.10"/>
+<text x="40" y="516" fill="#bfc0c0" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+<rect x="40" y="532" width="14" height="10" rx="2" fill="#f08a59" stroke="#f08a59" stroke-width="1" fill-opacity="0.10"/>
+<text x="60" y="540" fill="#bfc0c0" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Role module (focal)</text>
+<rect x="184" y="532" width="14" height="10" rx="2" fill="#bfc0c0" stroke="#949eb2" stroke-width="1" fill-opacity="0.10"/>
+<text x="204" y="540" fill="#bfc0c0" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Source file</text>
+<rect x="288" y="532" width="14" height="10" rx="2" fill="#393e53" stroke="#f5f5f5" stroke-width="1"/>
+<text x="308" y="540" fill="#bfc0c0" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Module or Host</text>
+<rect x="408" y="532" width="14" height="10" rx="2" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+<text x="428" y="540" fill="#bfc0c0" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Flake output</text>
+<line x1="516" y1="537" x2="544" y2="537" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#composition-dark-arrow)"/>
+<text x="552" y="540" fill="#bfc0c0" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Flows into</text>
+<line x1="632" y1="537" x2="660" y2="537" stroke="#f08a59" stroke-width="1.4" marker-end="url(#composition-dark-arrow-accent)"/>
+<text x="668" y="540" fill="#bfc0c0" font-size="8.5" font-family="'Geist', system-ui, sans-serif">home-manager.sharedModules</text>
+</svg>

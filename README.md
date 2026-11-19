@@ -5,7 +5,8 @@ Dendritic Nix flake for two Hosts:
 - `helios`: MacBook, aarch64-darwin (nix-darwin + Home Manager + Homebrew casks)
 - `typhon`: desktop PC, x86_64-linux (NixOS, KDE Plasma)
 
-Vocabulary is in [GLOSSARY.md](GLOSSARY.md), decisions in [docs/adr/](docs/adr/), research in
+How it fits together is in [ARCHITECTURE.md](ARCHITECTURE.md), vocabulary in
+[GLOSSARY.md](GLOSSARY.md), decisions in [docs/adr/](docs/adr/), research in
 [docs/research/](docs/research/).
 
 ## Daily use
