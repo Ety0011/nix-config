@@ -1,8 +1,11 @@
 {
   "recommendations": [
     "ms-python.python",
+    "ms-toolsai.jupyter",
     "charliermarsh.ruff",
     "detachhead.basedpyright",
     "mkhl.direnv"
-  ]
+  ],
+  // basedpyright replaces it.
+  "unwantedRecommendations": ["ms-python.vscode-pylance"]
 }

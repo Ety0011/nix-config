@@ -6,9 +6,18 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+# A newer push to the same branch or PR supersedes the running check.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       # Same Python build as the dev shell; never the runner's system Python.
       UV_MANAGED_PYTHON: "1"
@@ -17,8 +26,6 @@ jobs:
       # Reads .python-version and uv.lock, the pins the dev shell uses too.
       - uses: astral-sh/setup-uv@v10.3.3
       - run: uv sync --locked
-      - run: uv run ruff format --check
-      - run: uv run ruff check
-      - run: uv run basedpyright
-      # Exit 5 is "no tests collected": a new project starts with none.
-      - run: uv run pytest || [ $? -eq 5 ]
+      # The same checks the Claude Stop hook and people run (ruff and
+      # basedpyright cover notebooks as well as .py files).
+      - run: uv run scripts/check.sh

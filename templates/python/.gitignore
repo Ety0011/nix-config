@@ -20,3 +20,8 @@ __pycache__/
 
 # Not listed: each writes its own "*" .gitignore.
 # .ruff_cache/ (ruff), .pytest_cache/ (pytest), dist/ (uv build)
+
+# Claude Code: personal files next to the team's committed config
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/worktrees/

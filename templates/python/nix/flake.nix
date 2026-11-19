@@ -8,7 +8,13 @@
     let
       inherit (nixpkgs) lib;
       forAllSystems =
-        f: lib.genAttrs [ "aarch64-darwin" "x86_64-linux" ] (system: f nixpkgs.legacyPackages.${system});
+        f:
+        lib.genAttrs [
+          # No x86_64-darwin: nixpkgs-unstable dropped Intel Macs (26.11).
+          "aarch64-darwin"
+          "aarch64-linux"
+          "x86_64-linux"
+        ] (system: f nixpkgs.legacyPackages.${system});
     in
     {
       devShells = forAllSystems (pkgs: {

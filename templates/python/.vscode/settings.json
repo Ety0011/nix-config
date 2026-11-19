@@ -1,6 +1,27 @@
 {
+  // The venv that uv (via direnv) manages; also the notebooks' kernel.
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  // basedpyright is the language server (settings in pyproject.toml), so turn
+  // off Pylance to avoid two sets of diagnostics.
+  "python.languageServer": "None",
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  },
+  // Same ruff rules on notebook cells, so CI's checks pass on save.
+  "notebook.formatOnSave.enabled": true,
+  "notebook.codeActionsOnSave": {
+    "notebook.source.fixAll": "explicit",
+    "notebook.source.organizeImports": "explicit"
+  },
+  "files.exclude": {
+    "**/.direnv": true,
+    "**/.ruff_cache": true,
+    "**/.pytest_cache": true,
+    "**/__pycache__": true
   }
 }
