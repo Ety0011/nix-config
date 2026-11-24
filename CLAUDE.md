@@ -23,6 +23,10 @@ nh darwin switch                          # apply on helios (typhon: nh os switc
 
 ## Agent skills
 
+### Tool discovery
+
+Before starting a new kind of work, run the `find-skills` skill (user-level, from `vercel-labs/skills`). Read a candidate's SKILL.md before installing it.
+
 ### Issue tracker
 
 Issues live in GitHub Issues for `Ety0011/nix-config`, via `gh`. See `docs/agents/issue-tracker.md`.
